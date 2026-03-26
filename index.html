@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="منصة Nexora لتنمية المهارات الرقمية لإنتاج مصادر التعلم الرقمية - كورسات احترافية ومرشد ذكاء اصطناعي">
+  <title>Nexora | منصة تنمية المهارات الرقمية</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Phosphor Icons -->
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+  <script>
+    // Check local storage for theme before page loads to prevent flash of wrong theme
+    const savedTheme = localStorage.getItem('nexora-theme');
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('nexora-theme', 'dark');
+    }
+  </script>
+  <!-- Google Model Viewer for 3D GLB -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+</head>
+<body>
+
+  <!-- Particles Background -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#" class="nav-brand">
+        <div class="brand-icon" style="background: transparent; box-shadow: 0 0 15px var(--green-glow); border-radius: 50%; overflow: hidden; border: 2px solid var(--border-hover); padding: 2px;">
+          <img src="nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        </div>
+        <span>Nexora</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#hero" class="active">الرئيسية</a>
+        <a href="#courses">الكورسات</a>
+        <a href="#ai-mentor">المرشد الذكي</a>
+        <a href="#features">المميزات</a>
+        
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i class="ph ph-sun sun-icon"></i>
+          <i class="ph ph-moon moon-icon"></i>
+        </button>
+
+        <a href="#courses" class="nav-cta">ابدأ التعلم</a>
+      </div>
+      
+      <!-- University Logos -->
+      <div class="nav-univ-logos">
+        <img src="logo-damietta.jpg" alt="Damietta University" title="جامعة دمياط">
+        <img src="logo-education.jpg" alt="Faculty of Education" title="كلية التربية">
+        <img src="logo-techno.jpg" alt="Educational Technology" title="تكنولوجيا التعليم">
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== HERO SECTION ========== -->
+  <section class="hero" id="hero">
+    <!-- Video Background -->
+    <div class="hero-video-wrapper">
+      <video class="hero-video" autoplay muted loop playsinline>
+        <source src="1bb8nh7tz5rmr0cx4wvrb66p1g_result_.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        منصة تعليمية ذكية بتقنيات الذكاء الاصطناعي
+      </div>
+      <h1 class="hero-title">
+        طوّر مهاراتك الرقمية في
+        <span class="highlight">إنتاج مصادر التعلم</span>
+      </h1>
+      <p class="hero-subtitle">
+        منصة متكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية
+        مع مرشد ذكاء اصطناعي يرافقك في رحلة التعلم خطوة بخطوة
+      </p>
+      <div class="hero-buttons">
+        <button class="btn-primary" onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">
+          استكشف الكورسات
+          <i class="ph ph-arrow-left"></i>
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('ai-mentor').scrollIntoView({behavior:'smooth'})">
+          <i class="ph ph-robot"></i>
+          تعرّف على المرشد الذكي
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== COURSES SECTION ========== -->
+  <section class="courses" id="courses">
+    <div class="container">
+      <div class="courses-header reveal">
+        <span class="section-label">الكورسات التعليمية</span>
+        <h2 class="section-title">أربع كورسات <span class="highlight">احترافية</span></h2>
+        <p class="section-subtitle">
+          رحلة تعليمية شاملة تنقلك من المفاهيم الأساسية إلى الإنتاج الاحترافي لمصادر التعلم الرقمية
+        </p>
+      </div>
+      <div class="courses-grid">
+        <!-- Course 1 -->
+        <div class="course-card reveal reveal-delay-1">
+          <span class="course-number">01</span>
+          <div class="course-icon">
+            <i class="ph ph-book-open-text"></i>
+          </div>
+          <h3>الإطار المفاهيمي لمصادر التعلم الرقمية</h3>
+          <p>تعرّف على الأسس النظرية والمفاهيمية لمصادر التعلم الرقمية ومعايير تصميمها وإنتاجها</p>
+          <a href="#" class="course-link">
+            ابدأ الكورس
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Course 2 -->
+        <div class="course-card reveal reveal-delay-2">
+          <span class="course-number">02</span>
+          <div class="course-icon">
+            <i class="ph ph-chart-pie-slice"></i>
+          </div>
+          <h3>الإنفوجرافيك</h3>
+          <p>اتقن فن تصميم الإنفوجرافيك التعليمي وتحويل المعلومات المعقدة إلى تصاميم بصرية جذابة</p>
+          <a href="#" class="course-link">
+            ابدأ الكورس
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Course 3 -->
+        <div class="course-card reveal reveal-delay-3">
+          <span class="course-number">03</span>
+          <div class="course-icon">
+            <i class="ph ph-exam"></i>
+          </div>
+          <h3>الاختبارات الإلكترونية</h3>
+          <p>تعلم تصميم وبناء اختبارات إلكترونية تفاعلية فعّالة لقياس وتقييم نتائج التعلم</p>
+          <a href="#" class="course-link">
+            ابدأ الكورس
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Course 4 -->
+        <div class="course-card reveal reveal-delay-4">
+          <span class="course-number">04</span>
+          <div class="course-icon">
+            <i class="ph ph-game-controller"></i>
+          </div>
+          <h3>الألعاب الإلكترونية</h3>
+          <p>صمم ألعابًا تعليمية إلكترونية تفاعلية تجمع بين المتعة والتعلم لتعزيز المشاركة</p>
+          <a href="#" class="course-link">
+            ابدأ الكورس
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STATS ========== -->
+  <section class="stats reveal">
+    <div class="container">
+      <div class="stat-item">
+        <h3 data-count="4">0</h3>
+        <p>كورسات احترافية</p>
+      </div>
+      <div class="stat-item">
+        <h3 data-count="25">0+</h3>
+        <p>درس تفاعلي</p>
+      </div>
+      <div class="stat-item">
+        <h3>AI</h3>
+        <p>مرشد ذكي شخصي</p>
+      </div>
+      <div class="stat-item">
+        <h3>24/7</h3>
+        <p>دعم متواصل</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== AI MENTOR SECTION ========== -->
+  <section class="ai-mentor" id="ai-mentor">
+    <div class="container">
+      <div class="ai-mentor-info reveal">
+        <span class="section-label">المرشد الذكي</span>
+        <h2 class="section-title">مرشدك الشخصي <span class="highlight">بالذكاء الاصطناعي</span></h2>
+        <p class="section-subtitle">
+          وكيل ذكاء اصطناعي متقدم يعمل كموجه ومرشد شخصي، يرافقك في رحلتك التعليمية ويقدم لك الدعم والتوجيه في أي وقت
+        </p>
+        <div class="ai-features">
+          <div class="ai-feature">
+            <div class="ai-feature-icon">
+              <i class="ph ph-chats-circle"></i>
+            </div>
+            <div>
+              <h4>حوار تفاعلي ذكي</h4>
+              <p>يفهم أسئلتك ويقدم إجابات مخصصة بناءً على محتوى الكورسات</p>
+            </div>
+          </div>
+          <div class="ai-feature">
+            <div class="ai-feature-icon">
+              <i class="ph ph-path"></i>
+            </div>
+            <div>
+              <h4>توجيه مسار التعلم</h4>
+              <p>يساعدك في اختيار المسار التعليمي الأنسب لأهدافك ومستواك</p>
+            </div>
+          </div>
+          <div class="ai-feature">
+            <div class="ai-feature-icon">
+              <i class="ph ph-lightbulb"></i>
+            </div>
+            <div>
+              <h4>نصائح وتوصيات</h4>
+              <p>يقدم نصائح عملية ومصادر إضافية لتعزيز تجربة التعلم</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Preview -->
+      <div class="chat-preview reveal">
+        <div class="chat-header">
+          <div class="chat-avatar">
+            <img src="avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+          </div>
+          <div class="chat-header-info">
+            <h4>المرشد الذكي — Nexora AI</h4>
+            <span>● متصل الآن</span>
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-message bot">
+            مرحبًا! 👋 أنا مرشدك الذكي في منصة Nexora. كيف يمكنني مساعدتك اليوم؟
+          </div>
+          <div class="chat-message user">
+            أريد أن أبدأ في تعلم تصميم الإنفوجرافيك
+          </div>
+          <div class="chat-message bot">
+            اختيار رائع! 🎨 قبل البدء بكورس الإنفوجرافيك، أنصحك بإنهاء الإطار المفاهيمي أولاً لتكوين قاعدة متينة. هل تريد أن أرسم لك خطة تعلم مخصصة؟
+          </div>
+          <div class="typing-indicator" id="chatTyping">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" placeholder="اكتب رسالتك هنا..." id="chatInput">
+          <button class="chat-send-btn" id="chatSendBtn">
+            <i class="ph ph-paper-plane-tilt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FEATURES SECTION ========== -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-header reveal">
+        <span class="section-label">لماذا Nexora؟</span>
+        <h2 class="section-title">تجربة تعليمية <span class="highlight">استثنائية</span></h2>
+        <p class="section-subtitle">
+          مميزات تجعل من رحلة تعلمك تجربة ممتعة وفعّالة
+        </p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">
+            <i class="ph ph-monitor-play"></i>
+          </div>
+          <h3>محتوى تفاعلي</h3>
+          <p>دروس تفاعلية مصممة بأحدث تقنيات التعلم الرقمي</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">
+            <i class="ph ph-user-focus"></i>
+          </div>
+          <h3>تعلم مخصص</h3>
+          <p>مسار تعليمي يتكيف مع مستواك وأهدافك الشخصية</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon">
+            <i class="ph ph-certificate"></i>
+          </div>
+          <h3>شهادات معتمدة</h3>
+          <p>احصل على شهادة إتمام معتمدة عند إكمال كل كورس</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">
+            <i class="ph ph-device-mobile"></i>
+          </div>
+          <h3>تعلم في أي مكان</h3>
+          <p>متوافق مع جميع الأجهزة للدراسة في أي وقت وأي مكان</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">
+            <i class="ph ph-robot"></i>
+          </div>
+          <h3>مرشد أكاديمي بالذكاء الإصطناعي</h3>
+          <p>مرشد ذكي متاح في أي وقت للإجابة على تساؤلاتك وتوجيهك في مسارك التعليمي</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon">
+            <i class="ph ph-rocket-launch"></i>
+          </div>
+          <h3>تطبيق عملي</h3>
+          <p>مشاريع عملية حقيقية لتطبيق ما تعلمته فورًا</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="nav-brand">
+            <div class="brand-icon">
+              <i class="ph ph-brain"></i>
+            </div>
+            <span>Nexora</span>
+          </a>
+          <p>منصة متكاملة لتنمية المهارات الرقمية في إنتاج مصادر التعلم الرقمية باستخدام أحدث تقنيات الذكاء الاصطناعي</p>
+          <div class="social-links">
+            <a href="https://www.facebook.com/share/1HMxedGmGJ/" class="social-link" aria-label="Facebook" target="_blank"><i class="ph ph-facebook-logo"></i></a>
+            <a href="https://youtube.com/@osospiracy5468?si=_SKB4Z-yZtEt14L-" class="social-link" aria-label="YouTube" target="_blank"><i class="ph ph-youtube-logo"></i></a>
+            <a href="https://www.linkedin.com/in/osama-almashad-9324b3340?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="social-link" aria-label="LinkedIn" target="_blank"><i class="ph ph-linkedin-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>الكورسات</h4>
+          <ul>
+            <li><a href="#">الإطار المفاهيمي</a></li>
+            <li><a href="#">الإنفوجرافيك</a></li>
+            <li><a href="#">الاختبارات الإلكترونية</a></li>
+            <li><a href="#">الألعاب الإلكترونية</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>المنصة</h4>
+          <ul>
+            <li><a href="#">عن المنصة</a></li>
+            <li><a href="#">المرشد الذكي</a></li>
+            <li><a href="#">الأسئلة الشائعة</a></li>
+            <li><a href="#">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>الدعم</h4>
+          <ul>
+            <li><a href="#">مركز المساعدة</a></li>
+            <li><a href="#">سياسة الخصوصية</a></li>
+            <li><a href="#">الشروط والأحكام</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Nexora. جميع الحقوق محفوظة</p>
+        <p>صُنع بـ 💚 لتمكين المعلمين رقمياً</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Chatbot Button -->
+  <button class="chatbot-fab" id="chatbotFab" aria-label="Open AI Chatbot">
+    <img src="avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+  </button>
+
+  <!-- Floating Chat Panel -->
+  <div class="chatbot-panel" id="chatbotPanel">
+    <div class="chat-header">
+      <div class="chat-avatar">
+        <img src="avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+      </div>
+      <div class="chat-header-info">
+        <h4>المرشد الذكي</h4>
+        <span>● متصل الآن</span>
+      </div>
+      <button class="chat-close-btn" id="chatCloseBtn" aria-label="Close chat">
+        <i class="ph ph-x"></i>
+      </button>
+    </div>
+    <div class="chat-messages" id="floatingChatMessages">
+      <div class="chat-message bot">
+        مرحبًا! 👋 كيف يمكنني مساعدتك في رحلتك التعليمية؟
+      </div>
+      <div class="typing-indicator" id="floatingTyping">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="اكتب سؤالك..." id="floatingChatInput">
+      <button class="chat-send-btn" id="floatingChatSend">
+        <i class="ph ph-paper-plane-tilt"></i>
+      </button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
