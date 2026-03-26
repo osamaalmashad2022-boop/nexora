@@ -538,7 +538,7 @@ img {
   align-items: flex-end;
   justify-content: center;
   position: relative;
-  padding: 0 0 40px;
+  padding: 0;
   overflow: hidden;
 }
 
@@ -1386,6 +1386,24 @@ img {
 }
 
 @media (max-width: 768px) {
+  .navbar .container {
+    padding: 0 20px;
+  }
+  .nav-brand {
+    font-size: 1.2rem;
+    gap: 8px;
+  }
+  .nav-brand .brand-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .nav-univ-logos {
+    gap: 8px;
+  }
+  .nav-univ-logos img {
+    height: 36px;
+  }
+
   .nav-links {
     position: fixed;
     top: 0;
@@ -1447,8 +1465,27 @@ img {
 }
 
 @media (max-width: 480px) {
+  .navbar .container {
+    padding: 0 16px;
+  }
+  .nav-brand {
+    font-size: 1rem;
+    gap: 6px;
+  }
+  .nav-brand .brand-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .nav-univ-logos {
+    gap: 6px;
+  }
+  .nav-univ-logos img {
+    height: 28px;
+    padding: 2px;
+  }
+
   .hero {
-    padding: 100px 0 60px;
+    padding: 100px 0 0;
   }
 
   .robot-container {

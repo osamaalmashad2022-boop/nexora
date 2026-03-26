@@ -314,6 +314,7 @@ function initChatbot() {
   const messages = document.getElementById('floatingChatMessages');
   const closeBtn = document.getElementById('chatCloseBtn');
   const typingEl = document.getElementById('floatingTyping');
+  const footerBtn = document.getElementById('footerAiMentorBtn');
   if (!fab || !panel) return;
 
   fab.addEventListener('click', () => {
@@ -322,6 +323,17 @@ function initChatbot() {
       setTimeout(() => input.focus(), 300);
     }
   });
+
+  if (footerBtn) {
+    footerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!panel.classList.contains('open')) {
+        panel.classList.add('open');
+        if (input) setTimeout(() => input.focus(), 300);
+      }
+    });
+  }
 
   // Close button
   if (closeBtn) {
@@ -332,7 +344,8 @@ function initChatbot() {
 
   // Close panel when clicking outside
   document.addEventListener('click', (e) => {
-    if (!panel.contains(e.target) && !fab.contains(e.target) && panel.classList.contains('open')) {
+    const isFooterClick = footerBtn && footerBtn.contains(e.target);
+    if (!panel.contains(e.target) && !fab.contains(e.target) && !isFooterClick && panel.classList.contains('open')) {
       panel.classList.remove('open');
     }
   });

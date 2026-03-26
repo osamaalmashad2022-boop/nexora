@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="تعليمات استخدام منصة Nexora لتنمية المهارات الرقمية - دليل شامل لكيفية التنقل واستخدام جميع مميزات المنصة">
+  <title>تعليمات استخدام المنصة | Nexora</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+  <script>
+    const savedTheme = localStorage.getItem('nexora-theme');
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('nexora-theme', 'dark');
+    }
+  </script>
+  <style>
+    /* ---- Instructions Page Specific Styles ---- */
+    .instructions-hero {
+      padding: 140px 0 60px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(180deg, rgba(0,255,136,0.03) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .instructions-hero h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .instructions-hero h1 .highlight {
+      color: var(--green-neon);
+      text-shadow: 0 0 30px var(--green-glow);
+    }
+
+    .instructions-hero p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    .instructions-content {
+      padding: 80px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .instructions-toc {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin-bottom: 60px;
+      backdrop-filter: blur(10px);
+    }
+
+    .instructions-toc h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--green-neon);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .instructions-toc h2 i {
+      font-size: 1.4rem;
+    }
+
+    .toc-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .toc-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      transition: var(--transition-fast);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .toc-list a:hover {
+      background: rgba(0, 255, 136, 0.06);
+      color: var(--green-neon);
+      padding-right: 22px;
+    }
+
+    .toc-list a .toc-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--green-neon);
+      font-family: var(--font-en);
+      flex-shrink: 0;
+    }
+
+    .instruction-section {
+      margin-bottom: 64px;
+      scroll-margin-top: 100px;
+    }
+
+    .instruction-section .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-header .section-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green-neon), var(--green-mid));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #000;
+      font-family: var(--font-en);
+      flex-shrink: 0;
+      box-shadow: 0 0 20px var(--green-glow);
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .instruction-section .section-body {
+      padding-right: 64px;
+    }
+
+    .instruction-section .section-body p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 2;
+      margin-bottom: 16px;
+    }
+
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .step-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.06);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .step-list li:last-child {
+      border-bottom: none;
+    }
+
+    .step-list li .step-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--green-neon);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-list li strong {
+      color: var(--text-primary);
+    }
+
+    .info-box {
+      background: rgba(0, 255, 136, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin: 20px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .info-box .info-icon {
+      font-size: 1.4rem;
+      color: var(--green-neon);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .info-box p {
+      margin: 0 !important;
+      font-size: 0.95rem !important;
+    }
+
+    .back-to-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--green-neon), var(--green-mid));
+      color: #000;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      font-family: var(--font-ar);
+      box-shadow: 0 4px 30px var(--green-glow);
+      margin-top: 40px;
+    }
+
+    .back-to-home:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 50px var(--green-glow);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .instruction-section .section-body {
+        padding-right: 0;
+      }
+
+      .toc-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Particles Background -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon" style="background: transparent; box-shadow: 0 0 15px var(--green-glow); border-radius: 50%; overflow: hidden; border: 2px solid var(--border-hover); padding: 2px;">
+          <img src="nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        </div>
+        <span>Nexora</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">الرئيسية</a>
+        <a href="index.html#courses">الكورسات</a>
+        <a href="index.html#ai-mentor">المرشد الذكي</a>
+        <a href="index.html#features">المميزات</a>
+
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i class="ph ph-sun sun-icon"></i>
+          <i class="ph ph-moon moon-icon"></i>
+        </button>
+
+        <a href="index.html#courses" class="nav-cta">ابدأ التعلم</a>
+      </div>
+
+      <!-- University Logos -->
+      <div class="nav-univ-logos">
+        <img src="logo-damietta.jpg" alt="Damietta University" title="جامعة دمياط">
+        <img src="logo-education.jpg" alt="Faculty of Education" title="كلية التربية">
+        <img src="logo-techno.jpg" alt="Educational Technology" title="تكنولوجيا التعليم">
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== INSTRUCTIONS HERO ========== -->
+  <section class="instructions-hero">
+    <div class="container">
+      <span class="section-label">دليل الاستخدام</span>
+      <h1>تعليمات استخدام <span class="highlight">منصة Nexora</span></h1>
+      <p>دليل شامل ومفصّل يساعدك على التعرف على جميع مميزات المنصة وكيفية الاستفادة منها بأفضل طريقة ممكنة</p>
+    </div>
+  </section>
+
+  <!-- ========== INSTRUCTIONS CONTENT ========== -->
+  <section class="instructions-content">
+    <div class="container">
+
+      <!-- Table of Contents -->
+      <div class="instructions-toc">
+        <h2><i class="ph ph-list-bullets"></i> فهرس التعليمات</h2>
+        <div class="toc-list">
+          <a href="#section-1"><span class="toc-num">1</span> الوصول إلى المنصة</a>
+          <a href="#section-2"><span class="toc-num">2</span> التنقل في الصفحة الرئيسية</a>
+          <a href="#section-3"><span class="toc-num">3</span> استعراض الكورسات التعليمية</a>
+          <a href="#section-4"><span class="toc-num">4</span> استخدام المرشد الذكي</a>
+          <a href="#section-5"><span class="toc-num">5</span> الشات العائم (المرشد الأكاديمي)</a>
+          <a href="#section-6"><span class="toc-num">6</span> التبديل بين الوضع الداكن والفاتح</a>
+          <a href="#section-7"><span class="toc-num">7</span> استخدام المنصة على الهاتف</a>
+          <a href="#section-8"><span class="toc-num">8</span> التواصل ومتابعة المنصة</a>
+        </div>
+      </div>
+
+      <!-- Section 1 -->
+      <div class="instruction-section" id="section-1">
+        <div class="section-header">
+          <span class="section-num">1</span>
+          <h2>الوصول إلى المنصة</h2>
+        </div>
+        <div class="section-body">
+          <p>للوصول إلى منصة Nexora، كل ما تحتاجه هو متصفح إنترنت حديث (مثل Google Chrome أو Microsoft Edge أو Safari) واتصال بالإنترنت.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-globe"></i></span>
+              <div><strong>افتح المتصفح:</strong> قم بفتح متصفح الإنترنت المفضل لديك على الكمبيوتر أو الهاتف المحمول.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-link"></i></span>
+              <div><strong>أدخل رابط المنصة:</strong> اكتب عنوان المنصة في شريط العنوان أعلى المتصفح واضغط Enter.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-check-circle"></i></span>
+              <div><strong>ستظهر لك الصفحة الرئيسية:</strong> بمجرد تحميل الصفحة ستجد واجهة المنصة مع فيديو خلفية وعبارة "طوّر مهاراتك الرقمية في إنتاج مصادر التعلم".</div>
+            </li>
+          </ul>
+          <div class="info-box">
+            <i class="ph ph-info info-icon"></i>
+            <p>لا تحتاج إلى تسجيل دخول أو إنشاء حساب للوصول إلى المنصة. جميع المحتويات متاحة مباشرة ومجاناً.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="instruction-section" id="section-2">
+        <div class="section-header">
+          <span class="section-num">2</span>
+          <h2>التنقل في الصفحة الرئيسية</h2>
+        </div>
+        <div class="section-body">
+          <p>الصفحة الرئيسية تتكون من عدة أقسام يمكنك التنقل بينها بسهولة باستخدام شريط التنقل العلوي (Navbar) أو التمرير لأسفل.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-house"></i></span>
+              <div><strong>الرئيسية:</strong> يعيدك إلى أعلى الصفحة حيث الفيديو التعريفي والأزرار الرئيسية.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-book-open-text"></i></span>
+              <div><strong>الكورسات:</strong> ينقلك مباشرة إلى قسم الكورسات الأربعة المتاحة في المنصة.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-robot"></i></span>
+              <div><strong>المرشد الذكي:</strong> ينقلك إلى قسم المحادثة مع المرشد الأكاديمي المدعوم بالذكاء الاصطناعي.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-star"></i></span>
+              <div><strong>المميزات:</strong> يعرض لك جميع مميزات المنصة مثل المحتوى التفاعلي والتعلم المخصص والشهادات المعتمدة.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-rocket-launch"></i></span>
+              <div><strong>ابدأ التعلم:</strong> زر مميز ينقلك مباشرة إلى الكورسات لتبدأ رحلة التعلم فوراً.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="instruction-section" id="section-3">
+        <div class="section-header">
+          <span class="section-num">3</span>
+          <h2>استعراض الكورسات التعليمية</h2>
+        </div>
+        <div class="section-body">
+          <p>تقدم المنصة أربع كورسات احترافية مصممة لتنمية مهاراتك الرقمية في إنتاج مصادر التعلم. كل كورس يركز على مجال محدد:</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-book-open-text"></i></span>
+              <div><strong>الكورس الأول — الإطار المفاهيمي لمصادر التعلم الرقمية:</strong> يقدم الأسس النظرية والمفاهيمية لمصادر التعلم الرقمية ومعايير تصميمها. يُنصح بالبدء بهذا الكورس أولاً لبناء قاعدة متينة.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-chart-pie-slice"></i></span>
+              <div><strong>الكورس الثاني — الإنفوجرافيك:</strong> يعلمك فن تصميم الإنفوجرافيك التعليمي وتحويل المعلومات المعقدة إلى تصاميم بصرية جذابة وسهلة الفهم.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-exam"></i></span>
+              <div><strong>الكورس الثالث — الاختبارات الإلكترونية:</strong> يعلمك تصميم وبناء اختبارات إلكترونية تفاعلية فعّالة لقياس وتقييم نتائج التعلم بطرق حديثة.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-game-controller"></i></span>
+              <div><strong>الكورس الرابع — الألعاب الإلكترونية:</strong> يعلمك تصميم ألعاب تعليمية إلكترونية تفاعلية تجمع بين المتعة والتعلم لتعزيز المشاركة.</div>
+            </li>
+          </ul>
+          <div class="info-box">
+            <i class="ph ph-lightbulb info-icon"></i>
+            <p>للبدء في أي كورس، اضغط على زر "ابدأ الكورس" الموجود أسفل وصف كل كورس في بطاقة الكورس.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4 -->
+      <div class="instruction-section" id="section-4">
+        <div class="section-header">
+          <span class="section-num">4</span>
+          <h2>استخدام المرشد الذكي (في الصفحة)</h2>
+        </div>
+        <div class="section-body">
+          <p>في قسم "المرشد الذكي" على الصفحة الرئيسية، ستجد نافذة محادثة تفاعلية يمكنك من خلالها التحدث مباشرة مع المرشد الأكاديمي المدعوم بالذكاء الاصطناعي.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-cursor-click"></i></span>
+              <div><strong>انتقل إلى القسم:</strong> اضغط على "المرشد الذكي" في شريط التنقل أو قم بالتمرير لأسفل حتى تصل إلى قسم المرشد.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-pencil-simple"></i></span>
+              <div><strong>اكتب سؤالك:</strong> في مربع الكتابة أسفل نافذة المحادثة، اكتب سؤالك أو استفسارك باللغة العربية.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-paper-plane-tilt"></i></span>
+              <div><strong>أرسل الرسالة:</strong> اضغط على زر الإرسال (أيقونة الطائرة الورقية) أو اضغط Enter لإرسال رسالتك.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-chat-circle-dots"></i></span>
+              <div><strong>انتظر الرد:</strong> سيظهر مؤشر الكتابة (ثلاث نقاط متحركة) أثناء تجهيز الرد، ثم ستظهر إجابة المرشد الذكي.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 5 -->
+      <div class="instruction-section" id="section-5">
+        <div class="section-header">
+          <span class="section-num">5</span>
+          <h2>الشات العائم (المرشد الأكاديمي)</h2>
+        </div>
+        <div class="section-body">
+          <p>بالإضافة إلى نافذة المحادثة في الصفحة الرئيسية، يوجد زر شات عائم في الزاوية السفلية اليسرى من الشاشة يتيح لك التحدث مع المرشد الذكي من أي مكان في الصفحة.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-chats-circle"></i></span>
+              <div><strong>افتح الشات:</strong> اضغط على الزر الدائري الأخضر المتحرك في أسفل يسار الشاشة. يمكنك أيضاً الضغط على "المرشد الذكي" في تذييل الصفحة (الفوتر).</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-pencil-simple"></i></span>
+              <div><strong>اكتب سؤالك:</strong> ستظهر نافذة محادثة عائمة. اكتب سؤالك في مربع الكتابة أسفل النافذة.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-paper-plane-tilt"></i></span>
+              <div><strong>أرسل واستقبل:</strong> أرسل رسالتك وانتظر رد المرشد الذكي. يمكنك إرسال عدة أسئلة متتالية.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-x"></i></span>
+              <div><strong>أغلق الشات:</strong> اضغط على زر (✕) في أعلى نافذة المحادثة لإغلاقها، أو اضغط في أي مكان خارج النافذة.</div>
+            </li>
+          </ul>
+          <div class="info-box">
+            <i class="ph ph-info info-icon"></i>
+            <p>المرشد الذكي يتذكر سياق المحادثة ويمكنه متابعة الحوار معك. لا تتردد في طرح أسئلة متتالية لتعميق فهمك.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6 -->
+      <div class="instruction-section" id="section-6">
+        <div class="section-header">
+          <span class="section-num">6</span>
+          <h2>التبديل بين الوضع الداكن والفاتح</h2>
+        </div>
+        <div class="section-body">
+          <p>توفر المنصة وضعين للعرض: الوضع الداكن (الافتراضي) والوضع الفاتح، لتوفير تجربة مريحة للعين في مختلف ظروف الإضاءة.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-sun"></i></span>
+              <div><strong>التبديل إلى الوضع الفاتح:</strong> اضغط على أيقونة الشمس (☀) الموجودة في شريط التنقل العلوي بين روابط التنقل.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-moon"></i></span>
+              <div><strong>العودة إلى الوضع الداكن:</strong> عند تفعيل الوضع الفاتح، ستتحول الأيقونة إلى قمر (🌙). اضغط عليها للعودة إلى الوضع الداكن.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-floppy-disk"></i></span>
+              <div><strong>حفظ التفضيل:</strong> يتم حفظ اختيارك تلقائياً، وعند زيارتك للمنصة مرة أخرى سيظهر الوضع الذي اخترته سابقاً.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 7 -->
+      <div class="instruction-section" id="section-7">
+        <div class="section-header">
+          <span class="section-num">7</span>
+          <h2>استخدام المنصة على الهاتف المحمول</h2>
+        </div>
+        <div class="section-body">
+          <p>المنصة مصممة لتعمل بشكل ممتاز على جميع الأجهزة بما في ذلك الهواتف المحمولة والأجهزة اللوحية.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-list"></i></span>
+              <div><strong>القائمة المحمولة:</strong> على الهاتف، ستجد أيقونة القائمة (☰) في الزاوية. اضغط عليها لفتح قائمة التنقل الجانبية.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-x"></i></span>
+              <div><strong>إغلاق القائمة:</strong> اضغط على أيقونة (✕) أو على أي رابط في القائمة لإغلاقها والانتقال.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-device-mobile"></i></span>
+              <div><strong>عرض متجاوب:</strong> جميع الأقسام تتكيف تلقائياً مع حجم شاشة هاتفك لتقديم أفضل تجربة استخدام.</div>
+            </li>
+          </ul>
+          <div class="info-box">
+            <i class="ph ph-lightbulb info-icon"></i>
+            <p>للحصول على أفضل تجربة، يُنصح باستخدام الهاتف في وضع أفقي (Landscape) عند مشاهدة محتوى الكورسات.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 8 -->
+      <div class="instruction-section" id="section-8">
+        <div class="section-header">
+          <span class="section-num">8</span>
+          <h2>التواصل ومتابعة المنصة</h2>
+        </div>
+        <div class="section-body">
+          <p>يمكنك التواصل مع فريق المنصة ومتابعة آخر التحديثات عبر وسائل التواصل الاجتماعي الموجودة في تذييل الصفحة (الفوتر):</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon"><i class="ph ph-facebook-logo"></i></span>
+              <div><strong>فيسبوك:</strong> تابع صفحة المنصة للحصول على آخر الأخبار والتحديثات.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-youtube-logo"></i></span>
+              <div><strong>يوتيوب:</strong> شاهد الفيديوهات التعليمية والشروحات الإضافية على قناة المنصة.</div>
+            </li>
+            <li>
+              <span class="step-icon"><i class="ph ph-linkedin-logo"></i></span>
+              <div><strong>لينكد إن:</strong> تواصل مباشرة عبر الملف الشخصي على لينكد إن لأي استفسارات أو تعاون.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Back to Home -->
+      <div style="text-align: center;">
+        <a href="index.html" class="back-to-home">
+          <i class="ph ph-arrow-right"></i>
+          العودة إلى الصفحة الرئيسية
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-brand">
+            <div class="brand-icon" style="background: transparent; box-shadow: 0 0 15px var(--green-glow); border-radius: 50%; overflow: hidden; border: 2px solid var(--border-hover); padding: 2px;">
+              <img src="nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+            <span>Nexora</span>
+          </a>
+          <p>منصة متكاملة لتنمية المهارات الرقمية في إنتاج مصادر التعلم الرقمية باستخدام أحدث تقنيات الذكاء الاصطناعي</p>
+          <div class="social-links">
+            <a href="https://www.facebook.com/share/1HMxedGmGJ/" class="social-link" aria-label="Facebook" target="_blank"><i class="ph ph-facebook-logo"></i></a>
+            <a href="https://youtube.com/@osospiracy5468?si=_SKB4Z-yZtEt14L-" class="social-link" aria-label="YouTube" target="_blank"><i class="ph ph-youtube-logo"></i></a>
+            <a href="https://www.linkedin.com/in/osama-almashad-9324b3340?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="social-link" aria-label="LinkedIn" target="_blank"><i class="ph ph-linkedin-logo"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>الكورسات</h4>
+          <ul>
+            <li><a href="index.html#courses">الإطار المفاهيمي</a></li>
+            <li><a href="index.html#courses">الإنفوجرافيك</a></li>
+            <li><a href="index.html#courses">الاختبارات الإلكترونية</a></li>
+            <li><a href="index.html#courses">الألعاب الإلكترونية</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>المنصة</h4>
+          <ul>
+            <li><a href="goals.html">أهداف المنصة</a></li>
+            <li><a href="index.html#ai-mentor" id="footerAiMentorBtn">المرشد الذكي</a></li>
+            <li><a href="https://www.linkedin.com/in/osama-almashad-9324b3340?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">تواصل معنا</a></li>
+            <li><a href="#">فريق العمل</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>الدعم</h4>
+          <ul>
+            <li><a href="instructions.html">تعليمات استخدام المنصة</a></li>
+            <li><a href="#">سياسة الخصوصية</a></li>
+            <li><a href="#">الشروط والأحكام</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Nexora. جميع الحقوق محفوظة</p>
+        <p>صُنع بـ 💚 لتمكين المعلمين رقمياً 🌹</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        if (isLight) {
+          document.documentElement.removeAttribute('data-theme');
+          localStorage.setItem('nexora-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('nexora-theme', 'light');
+        }
+      });
+    }
+
+    // Mobile menu
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (menuToggle && navLinks) {
+      menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('open');
+        document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+      });
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          menuToggle.classList.remove('active');
+          navLinks.classList.remove('open');
+          document.body.style.overflow = '';
+        });
+      });
+    }
+
+    // Navbar scroll
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Particles
+    const canvas = document.getElementById('particles-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      resize();
+      window.addEventListener('resize', resize);
+      class Particle {
+        constructor() { this.reset(); }
+        reset() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2 + 0.5;
+          this.speedX = (Math.random() - 0.5) * 0.5;
+          this.speedY = (Math.random() - 0.5) * 0.5;
+          this.opacity = Math.random() * 0.5 + 0.1;
+          this.pulse = Math.random() * Math.PI * 2;
+        }
+        update() {
+          this.x += this.speedX; this.y += this.speedY; this.pulse += 0.02;
+          this.opacity = 0.1 + Math.sin(this.pulse) * 0.2;
+          if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        }
+        draw() {
+          ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 255, 136, ${this.opacity})`; ctx.fill();
+        }
+      }
+      const count = Math.min(50, Math.floor(window.innerWidth / 25));
+      for (let i = 0; i < count; i++) particles.push(new Particle());
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(anchor.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>
