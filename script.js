@@ -438,7 +438,14 @@ const SYSTEM_PROMPT = `أنت مرشد ذكي في منصة "Nexora" المخص�
 let conversationHistory = [];
 
 async function generateGeminiResponse(userMessage) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+  // Check if we are running locally or on Vercel
+  const isLocal = window.location.hostname === 'localhost' || 
+                  window.location.hostname === '127.0.0.1' || 
+                  window.location.protocol === 'file:';
+  
+  const url = isLocal ? 
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}` : 
+    `/api/chat`;
   
   // Add user message to history
   conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
@@ -460,14 +467,18 @@ async function generateGeminiResponse(userMessage) {
   };
 
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'X-goog-api-key': GEMINI_API_KEY
-      },
-      body: JSON.stringify(payload)
-    });
+    const fetchOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    };
+
+    // Only add the API key header if running locally
+    if (isLocal) {
+        fetchOptions.headers['X-goog-api-key'] = GEMINI_API_KEY;
+    }
+
+    const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
