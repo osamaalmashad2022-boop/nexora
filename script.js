@@ -376,6 +376,8 @@ function initChatbot() {
     try {
       // Call Gemini API
       const response = await generateGeminiResponse(text);
+      if (typingEl) typingEl.classList.add('active'); // Keep indicator until response is processed
+      
       if (typingEl) typingEl.classList.remove('active');
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
@@ -387,10 +389,21 @@ function initChatbot() {
       botMsg.innerHTML = formattedRes;
       messages.insertBefore(botMsg, typingEl);
     } catch (error) {
+      console.error("Chatbot Error:", error);
       if (typingEl) typingEl.classList.remove('active');
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
-      botMsg.textContent = "عذراً، حدث خطأ أثناء الاتصال بالمرشد الذكي. يرجى المحاولة مرة أخرى لاحقاً.";
+      
+      let errorText = "عذراً، حدث خطأ أثناء الاتصال بالمرشد الذكي.";
+      if (error.message.includes('429')) {
+        errorText = "عذراً، تم تجاوز حد الطلبات المسموح به حالياً. يرجى المحاولة بعد قليل.";
+      } else if (error.message.includes('401') || error.message.includes('403')) {
+        errorText = "هناك مشكلة في صلاحية الوصول (API Key). يرجى التحقق من الإعدادات.";
+      } else if (error.message.includes('Failed to fetch')) {
+        errorText = "تعذر الاتصال بالخادم. تأكد من اتصالك بالإنترنت وأنك لا تشغل الملف مباشرة (استخدم Live Server).";
+      }
+      
+      botMsg.textContent = errorText + " (تفاصيل الخطأ في الـ Console)";
       messages.insertBefore(botMsg, typingEl);
     }
     scrollToBottom();
@@ -407,7 +420,7 @@ function initChatbot() {
 /* =============================================
    GEMINI API INTEGRATION
    ============================================= */
-const GEMINI_API_KEY = "AIzaSyByED0etQHnokzG8OCRX3QnBy2miXwViEo";
+const GEMINI_API_KEY = typeof CONFIG !== 'undefined' ? CONFIG.GEMINI_API_KEY : "";
 const SYSTEM_PROMPT = `أنت مرشد ذكي في منصة "Nexora" المخصصة لتنمية المهارات الرقمية في إنتاج مصادر التعلم. 
 الكورسات المتاحة في المنصة حاليًا: 
 1) الإطار المفاهيمي
@@ -425,7 +438,7 @@ const SYSTEM_PROMPT = `أنت مرشد ذكي في منصة "Nexora" المخص�
 let conversationHistory = [];
 
 async function generateGeminiResponse(userMessage) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
   
   // Add user message to history
   conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
@@ -442,27 +455,38 @@ async function generateGeminiResponse(userMessage) {
     contents: conversationHistory,
     generationConfig: {
       temperature: 0.7,
-      maxOutputTokens: 500,
+      maxOutputTokens: 2048,
     }
   };
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-  if (!response.ok) {
-    throw new Error('API Request failed');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Gemini API Error Detail:", errorData);
+      throw new Error(`API Request failed with status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data = await response.json();
+    if (!data.candidates || data.candidates.length === 0) {
+      throw new Error('No response candidates returned from Gemini');
+    }
+    
+    const botAnswer = data.candidates[0].content.parts[0].text;
+    
+    // Add bot response to history
+    conversationHistory.push({ role: "model", parts: [{ text: botAnswer }] });
+    
+    return botAnswer;
+  } catch (error) {
+    console.error("Detailed Fetch Error:", error);
+    throw error;
   }
-
-  const data = await response.json();
-  const botAnswer = data.candidates[0].content.parts[0].text;
-  
-  // Add bot response to history
-  conversationHistory.push({ role: "model", parts: [{ text: botAnswer }] });
-  
-  return botAnswer;
 }
 
 /* =============================================
@@ -509,10 +533,11 @@ function initChatPreview() {
       botMsg.innerHTML = formattedRes;
       messages.insertBefore(botMsg, typingEl);
     } catch (error) {
+      console.error("Chat Preview Error:", error);
       if (typingEl) typingEl.classList.remove('active');
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
-      botMsg.textContent = "عذراً، حدث خطأ أثناء الاتصال بالمرشد الذكي.";
+      botMsg.textContent = "عذراً، حدث خطأ في النظام. تفاصيل الخطأ تظهر في الـ Console.";
       messages.insertBefore(botMsg, typingEl);
     }
     scrollToBottom();
