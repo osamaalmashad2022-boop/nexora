@@ -1,0 +1,8 @@
+# تجاهل ملف الإعدادات الحساسة
+config.js
+
+# تجاهل ملفات النظام والمؤقتة
+node_modules/
+.DS_Store
+Thumbs.db
+.env
