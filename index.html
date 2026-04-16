@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="منصة Nexora لتنمية المهارات الرقمية لإنتاج مصادر التعلم الرقمية - كورسات احترافية ومرشد ذكاء اصطناعي">
   <title>Nexora | منصة تنمية المهارات الرقمية</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
   <!-- Phosphor Icons -->
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
   <script>
@@ -20,6 +20,16 @@
   </script>
   <!-- Google Model Viewer for 3D GLB -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/avatar.png">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Nexora | منصة تنمية المهارات الرقمية">
+  <meta property="og:description" content="منصة Nexora المتكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية مع مرشد ذكاء اصطناعي">
+  <meta property="og:image" content="https://nexora-dc0e9.web.app/assets/images/nexora-logo.png">
+  <meta property="og:url" content="https://nexora-dc0e9.web.app/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
 
@@ -31,7 +41,7 @@
     <div class="container">
       <a href="#" class="nav-brand">
         <div class="brand-icon" style="background: transparent; box-shadow: 0 0 15px var(--green-glow); border-radius: 50%; overflow: hidden; border: 2px solid var(--border-hover); padding: 2px;">
-          <img src="nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+          <img src="assets/images/nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
         </div>
         <span>Nexora</span>
       </a>
@@ -40,6 +50,7 @@
         <a href="#courses">الكورسات</a>
         <a href="#ai-mentor">المرشد الذكي</a>
         <a href="#features">المميزات</a>
+        <a href="#myCertificates" id="navCertLink" style="display: none;">شهاداتي</a>
         
         <!-- Theme Toggle -->
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -47,14 +58,25 @@
           <i class="ph ph-moon moon-icon"></i>
         </button>
 
+        <div id="userProfile" class="user-profile" style="display: none;">
+          <span class="user-name" id="userNameDisplay"></span>
+          <button class="nav-logout-btn" id="navLogoutBtn" aria-label="تسجيل الخروج">
+            <i class="ph ph-sign-out"></i>
+            تسجيل الخروج
+          </button>
+        </div>
+        <a href="login.html" class="nav-login-btn" id="navLoginBtn">
+          <i class="ph ph-sign-in"></i>
+          تسجيل الدخول
+        </a>
         <a href="#courses" class="nav-cta">ابدأ التعلم</a>
       </div>
       
       <!-- University Logos -->
       <div class="nav-univ-logos">
-        <img src="logo-damietta.jpg" alt="Damietta University" title="جامعة دمياط">
-        <img src="logo-education.jpg" alt="Faculty of Education" title="كلية التربية">
-        <img src="logo-techno.jpg" alt="Educational Technology" title="تكنولوجيا التعليم">
+        <img src="assets/images/logo-damietta.jpg" alt="Damietta University" title="جامعة دمياط">
+        <img src="assets/images/logo-education.jpg" alt="Faculty of Education" title="كلية التربية">
+        <img src="assets/images/logo-techno.jpg" alt="Educational Technology" title="تكنولوجيا التعليم">
       </div>
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
         <span></span>
@@ -69,7 +91,7 @@
     <!-- Video Background -->
     <div class="hero-video-wrapper">
       <video class="hero-video" autoplay muted loop playsinline>
-        <source src="1bb8nh7tz5rmr0cx4wvrb66p1g_result_.mp4" type="video/mp4">
+        <source src="assets/videos/1bb8nh7tz5rmr0cx4wvrb66p1g_result_.mp4" type="video/mp4">
       </video>
     </div>
     <div class="hero-content">
@@ -78,11 +100,12 @@
         منصة تعليمية ذكية بتقنيات الذكاء الاصطناعي
       </div>
       <h1 class="hero-title">
-        طوّر مهاراتك الرقمية في
-        <span class="highlight">إنتاج مصادر التعلم</span>
+        طوّر مهاراتك الرقمية مع
+        <span class="highlight">Nexora</span>
+        لإنتاج مصادر التعلم
       </h1>
       <p class="hero-subtitle">
-        منصة متكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية
+        منصة Nexora المتكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية
         مع مرشد ذكاء اصطناعي يرافقك في رحلة التعلم خطوة بخطوة
       </p>
       <div class="hero-buttons">
@@ -117,7 +140,7 @@
           </div>
           <h3>الإطار المفاهيمي لمصادر التعلم الرقمية</h3>
           <p>تعرّف على الأسس النظرية والمفاهيمية لمصادر التعلم الرقمية ومعايير تصميمها وإنتاجها</p>
-          <a href="#" class="course-link">
+          <a href="javascript:void(0)" class="course-link" onclick="navigateToCourse(1)">
             ابدأ الكورس
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -133,7 +156,7 @@
           </div>
           <h3>الإنفوجرافيك</h3>
           <p>اتقن فن تصميم الإنفوجرافيك التعليمي وتحويل المعلومات المعقدة إلى تصاميم بصرية جذابة</p>
-          <a href="#" class="course-link">
+          <a href="javascript:void(0)" class="course-link" onclick="navigateToCourse(2)">
             ابدأ الكورس
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -149,7 +172,7 @@
           </div>
           <h3>الاختبارات الإلكترونية</h3>
           <p>تعلم تصميم وبناء اختبارات إلكترونية تفاعلية فعّالة لقياس وتقييم نتائج التعلم</p>
-          <a href="#" class="course-link">
+          <a href="javascript:void(0)" class="course-link" onclick="navigateToCourse(3)">
             ابدأ الكورس
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -165,7 +188,7 @@
           </div>
           <h3>الألعاب الإلكترونية</h3>
           <p>صمم ألعابًا تعليمية إلكترونية تفاعلية تجمع بين المتعة والتعلم لتعزيز المشاركة</p>
-          <a href="#" class="course-link">
+          <a href="javascript:void(0)" class="course-link" onclick="navigateToCourse(4)">
             ابدأ الكورس
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -175,6 +198,7 @@
       </div>
     </div>
   </section>
+  
 
   <!-- ========== STATS ========== -->
   <section class="stats reveal">
@@ -242,7 +266,7 @@
       <div class="chat-preview reveal">
         <div class="chat-header">
           <div class="chat-avatar">
-            <img src="avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            <img src="assets/images/avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
           </div>
           <div class="chat-header-info">
             <h4>المرشد الذكي — Nexora AI</h4>
@@ -330,6 +354,22 @@
     </div>
   </section>
 
+  <!-- ========== MY CERTIFICATES SECTION ========== -->
+  <section class="my-certificates" id="myCertificates" style="display: none;">
+    <div class="container">
+      <div class="courses-header reveal">
+        <span class="section-label">إنجازاتي</span>
+        <h2 class="section-title">شهاداتي <span class="highlight">المكتسبة</span></h2>
+        <p class="section-subtitle">
+          هنا تجد جميع الشهادات التي حصلت عليها بعد إتمام الكورسات بنجاح
+        </p>
+      </div>
+      <div class="certificates-grid" id="certificatesGrid">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </section>
+
   <!-- ========== FOOTER ========== -->
   <footer class="footer">
     <div class="container">
@@ -337,7 +377,7 @@
         <div class="footer-brand">
           <a href="#" class="nav-brand">
             <div class="brand-icon" style="background: transparent; box-shadow: 0 0 15px var(--green-glow); border-radius: 50%; overflow: hidden; border: 2px solid var(--border-hover); padding: 2px;">
-              <img src="nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+              <img src="assets/images/nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
             </div>
             <span>Nexora</span>
           </a>
@@ -351,10 +391,10 @@
         <div class="footer-col">
           <h4>الكورسات</h4>
           <ul>
-            <li><a href="#">الإطار المفاهيمي</a></li>
-            <li><a href="#">الإنفوجرافيك</a></li>
-            <li><a href="#">الاختبارات الإلكترونية</a></li>
-            <li><a href="#">الألعاب الإلكترونية</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToCourse(1)">الإطار المفاهيمي</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToCourse(2)">الإنفوجرافيك</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToCourse(3)">الاختبارات الإلكترونية</a></li>
+            <li><a href="javascript:void(0)" onclick="navigateToCourse(4)">الألعاب الإلكترونية</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -363,14 +403,14 @@
             <li><a href="goals.html">أهداف المنصة</a></li>
             <li><a href="javascript:void(0)" id="footerAiMentorBtn">المرشد الذكي</a></li>
             <li><a href="https://www.linkedin.com/in/osama-almashad-9324b3340?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">تواصل معنا</a></li>
-            <li><a href="#">فريق العمل</a></li>
+            <li><a href="team.html">فريق العمل</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>الدعم</h4>
           <ul>
             <li><a href="instructions.html">تعليمات استخدام المنصة</a></li>
-            <li><a href="#">سياسة الخصوصية</a></li>
+            <li><a href="privacy.html">سياسة الخصوصية</a></li>
             <li><a href="#">الشروط والأحكام</a></li>
           </ul>
         </div>
@@ -384,14 +424,14 @@
 
   <!-- Floating Chatbot Button -->
   <button class="chatbot-fab" id="chatbotFab" aria-label="Open AI Chatbot">
-    <img src="avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+    <img src="assets/images/avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
   </button>
 
   <!-- Floating Chat Panel -->
   <div class="chatbot-panel" id="chatbotPanel">
     <div class="chat-header">
       <div class="chat-avatar">
-        <img src="avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        <img src="assets/images/avatar.png" alt="Robot Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
       </div>
       <div class="chat-header-info">
         <h4>المرشد الذكي</h4>
@@ -417,7 +457,8 @@
     </div>
   </div>
 
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/courses-data.js"></script>
+  <script type="module" src="js/script.js"></script>
 </body>
 </html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="سياسة الخصوصية لمنصة Nexora - تعلم حماية بياناتك">
+  <title>سياسة الخصوصية | Nexora</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+  <script>
+    const savedTheme = localStorage.getItem('nexora-theme');
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('nexora-theme', 'dark');
+    }
+  </script>
+  <style>
+    .privacy-container {
+      max-width: 900px;
+      margin: 140px auto 80px;
+      padding: 40px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(10px);
+    }
+    .privacy-container h1 {
+      color: var(--green-neon);
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+    .privacy-container h2 {
+      color: var(--text-primary);
+      margin: 30px 0 15px;
+      font-size: 1.5rem;
+      border-right: 4px solid var(--green-neon);
+      padding-right: 15px;
+    }
+    .privacy-container p, .privacy-container li {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+    }
+    .privacy-container ul {
+      margin-right: 25px;
+      margin-bottom: 20px;
+    }
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+      color: var(--green-neon);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .back-home:hover {
+      gap: 15px;
+      text-shadow: 0 0 10px var(--green-glow);
+    }
+  </style>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/avatar.png">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Nexora | منصة تنمية المهارات الرقمية">
+  <meta property="og:description" content="منصة Nexora المتكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية مع مرشد ذكاء اصطناعي">
+  <meta property="og:image" content="https://nexora-dc0e9.web.app/assets/images/nexora-logo.png">
+  <meta property="og:url" content="https://nexora-dc0e9.web.app/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <canvas id="particles-canvas"></canvas>
+
+  <nav class="navbar scrolled">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon">
+          <img src="assets/images/nexora-logo.png" alt="Nexora Logo" style="width: 100%; height: 100%; border-radius: 50%;">
+        </div>
+        <span>Nexora</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">الرئيسية</a>
+        <a href="goals.html">الأهداف</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="privacy-container">
+      <h1>سياسة الخصوصية <span style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">(Privacy Policy)</span></h1>
+      
+      <p>مرحباً بك في منصة <strong>Nexora</strong>. نحن نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية. توضح هذه السياسة كيفية تعاملنا مع المعلومات عند استخدامك للمنصة، خاصة عند تسجيل الدخول باستخدام حساب Google.</p>
+
+      <h2>1. الغرض من المنصة</h2>
+      <p>Nexora هي منصة تعليمية تهدف إلى تنمية المهارات الرقمية في إنتاج مصادر التعلم الرقمية. نستخدم تقنيات الذكاء الاصطناعي لتوفير تجربة تعليمية مخصصة وتفاعلية للمستخدمين.</p>
+
+      <h2>2. البيانات التي نجمعها</h2>
+      <p>عند تسجيل الدخول باستخدام Google، نقوم بالوصول فقط إلى المعلومات الأساسية التي تسمح بها شركة Google، وهي:</p>
+      <ul>
+        <li><strong>الاسم الكامل:</strong> لعرضه في لوحة التحكم والشهادات التعليمية.</li>
+        <li><strong>البريد الإلكتروني:</strong> لتمييز حسابك وحفظ تقدمك في الكورسات.</li>
+        <li><strong>الصورة الشخصية:</strong> اختياري، لعرضها في ملفك الشخصي.</li>
+      </ul>
+
+      <h2>3. كيف نستخدم بياناتك</h2>
+      <p>نحن نستخدم هذه البيانات حصرياً لغرض:</p>
+      <ul>
+        <li>إنشاء حسابك وتخصيص تجربتك التعليمية.</li>
+        <li>حفظ نتائج الاختبارات والتقدم في الدروس.</li>
+        <li>إصدار شهادات إتمام الدورات التدريبية باسمك الصحيح.</li>
+        <li>التواصل معك بخصوص تحديثات المنصة أو الدعم الفني.</li>
+      </ul>
+
+      <h2>4. مشاركة البيانات</h2>
+      <p>نحن <strong>لا نقوم ببيع أو مشاركة</strong> بياناتك الشخصية مع أي جهات خارجية لأغراض تسويقية. يتم تخزين البيانات بشكل آمن باستخدام خدمات Google Firebase المشفرة.</p>
+
+      <h2>5. حقوقك</h2>
+      <p>يمكنك في أي وقت طلب حذف حسابك وبياناتك من المنصة عبر التواصل معنا، كما يمكنك إلغاء وصول المنصة إلى حساب Google الخاص بك عبر إعدادات "الأمان" في حسابك لدى Google.</p>
+
+      <h2>6. التواصل معنا</h2>
+      <p>إذا كان لديك أي استفسار حول سياسة الخصوصية، يمكنك التواصل مع إدارة Nexora عبر الروابط الموجودة في تذييل الصفحة الرئيسية.</p>
+
+      <a href="index.html" class="back-home">
+        <i class="ph ph-arrow-right"></i>
+        العودة للرئيسية
+      </a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container" style="text-align: center;">
+      <p>© 2026 Nexora. جميع الحقوق محفوظة لتمكين المعلمين رقمياً.</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js" type="module"></script>
+</body>
+</html>

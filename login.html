@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="تسجيل الدخول لمنصة Nexora لتنمية المهارات الرقمية">
+  <title>تسجيل الدخول | Nexora</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
+  <script>
+    const savedTheme = localStorage.getItem('nexora-theme');
+    if (savedTheme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('nexora-theme', 'dark');
+    }
+  </script>
+  <style>
+    /* ======== Login Page Styles ======== */
+
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 24px 60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+    }
+
+    /* Decorative glow behind card */
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0,255,136,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-card {
+      position: relative;
+      z-index: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 48px 40px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow: hidden;
+      animation: fadeInUp 0.8s ease both;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--green-neon), transparent);
+    }
+
+    /* Logo area */
+    .login-logo {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .login-logo-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 16px;
+      border: 3px solid var(--border-hover);
+      box-shadow: 0 0 30px var(--green-glow), 0 0 60px rgba(0,255,136,0.08);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 30px var(--green-glow), 0 0 60px rgba(0,255,136,0.08); }
+      50% { box-shadow: 0 0 50px var(--green-glow), 0 0 100px rgba(0,255,136,0.12); }
+    }
+
+    .login-logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .login-logo h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .login-logo h1 span {
+      background: linear-gradient(135deg, var(--green-neon), var(--green-bright));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-family: var(--font-en);
+    }
+
+    .login-logo p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    /* Tabs */
+    .login-tabs {
+      display: flex;
+      background: rgba(0,255,136,0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 32px;
+    }
+
+    .login-tab {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-ar);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .login-tab.active {
+      background: linear-gradient(135deg, var(--green-neon), var(--green-mid));
+      color: #000;
+      box-shadow: 0 4px 15px var(--green-glow);
+    }
+
+    .login-tab:not(.active):hover {
+      color: var(--green-neon);
+      background: rgba(0,255,136,0.06);
+    }
+
+    /* Form */
+    .login-form {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .login-form.active {
+      display: flex;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .form-group .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-group .input-icon {
+      position: absolute;
+      right: 16px;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      pointer-events: none;
+      transition: var(--transition-fast);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px 14px 16px;
+      padding-right: 48px;
+      background: rgba(0,255,136,0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font-ar);
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+      direction: rtl;
+    }
+
+    .form-group input:focus {
+      border-color: var(--green-neon);
+      box-shadow: 0 0 20px var(--green-glow);
+      background: rgba(0,255,136,0.06);
+    }
+
+    .form-group input:focus ~ .input-icon,
+    .form-group input:focus + .input-icon {
+      color: var(--green-neon);
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Password toggle */
+    .password-toggle {
+      position: absolute;
+      left: 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 4px;
+      transition: var(--transition-fast);
+    }
+
+    .password-toggle:hover {
+      color: var(--green-neon);
+    }
+
+    /* Submit button */
+    .login-submit {
+      padding: 16px;
+      background: linear-gradient(135deg, var(--green-neon), var(--green-mid));
+      color: #000;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-family: var(--font-ar);
+      transition: var(--transition);
+      box-shadow: 0 4px 20px var(--green-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .login-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 40px var(--green-glow);
+    }
+
+    .login-submit:active {
+      transform: translateY(-1px);
+    }
+
+    .login-submit.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .login-submit .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .login-submit.loading .spinner {
+      display: block;
+    }
+
+    .login-submit.loading .btn-text {
+      display: none;
+    }
+
+    /* Google Button & Divider */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 24px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 2px solid rgba(0,255,136,0.15);
+    }
+
+    .auth-divider span {
+      padding: 0 16px;
+    }
+
+    .google-btn {
+      width: 100%;
+      padding: 14px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-family: var(--font-ar);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .google-btn img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .google-btn:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--green-neon);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,255,136,0.1);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error / Success messages */
+    .form-message {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      animation: fadeInUp 0.3s ease both;
+    }
+
+    .form-message.error {
+      display: flex;
+      background: rgba(255,82,82,0.1);
+      border: 1px solid rgba(255,82,82,0.3);
+      color: #ff5252;
+    }
+
+    .form-message.success {
+      display: flex;
+      background: rgba(0,255,136,0.1);
+      border: 1px solid rgba(0,255,136,0.3);
+      color: var(--green-neon);
+    }
+
+    /* Decorative shapes */
+    .deco-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .deco-orb-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--green-neon);
+      top: -150px;
+      right: -100px;
+      animation: float-orb 12s ease-in-out infinite;
+    }
+
+    .deco-orb-2 {
+      width: 350px;
+      height: 350px;
+      background: var(--green-mid);
+      bottom: -150px;
+      left: -100px;
+      animation: float-orb 15s ease-in-out infinite reverse;
+    }
+
+    @keyframes float-orb {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.1); }
+    }
+
+    /* Feature hints */
+    .login-features {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .login-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .login-feature i {
+      color: var(--green-neon);
+      font-size: 1rem;
+    }
+
+    /* Light mode adjustments */
+    [data-theme="light"] .login-card {
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.06);
+    }
+
+    [data-theme="light"] .login-tabs {
+      background: #f8fafc;
+    }
+
+    [data-theme="light"] .form-group input {
+      background: #f8fafc;
+    }
+
+    [data-theme="light"] .form-group input:focus {
+      background: #ffffff;
+    }
+
+    /* Redirect notice */
+    .redirect-notice {
+      text-align: center;
+      margin-top: 20px;
+      padding: 12px 16px;
+      background: rgba(0,255,136,0.06);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      display: none;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .redirect-notice i {
+      color: var(--green-neon);
+      margin-left: 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 36px 24px;
+      }
+
+      .login-features {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .login-logo h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/avatar.png">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Nexora | منصة تنمية المهارات الرقمية">
+  <meta property="og:description" content="منصة Nexora المتكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية مع مرشد ذكاء اصطناعي">
+  <meta property="og:image" content="https://nexora-dc0e9.web.app/assets/images/nexora-logo.png">
+  <meta property="og:url" content="https://nexora-dc0e9.web.app/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+
+  <!-- Particles Background -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Decorative Orbs -->
+  <div class="deco-orb deco-orb-1"></div>
+  <div class="deco-orb deco-orb-2"></div>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-icon" style="background: transparent; box-shadow: 0 0 15px var(--green-glow); border-radius: 50%; overflow: hidden; border: 2px solid var(--border-hover); padding: 2px;">
+          <img src="assets/images/nexora-logo.png" alt="Nexora AI Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        </div>
+        <span>Nexora</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">الرئيسية</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i class="ph ph-sun sun-icon"></i>
+          <i class="ph ph-moon moon-icon"></i>
+        </button>
+      </div>
+      <div class="nav-univ-logos">
+        <img src="assets/images/logo-damietta.jpg" alt="Damietta University" title="جامعة دمياط">
+        <img src="assets/images/logo-education.jpg" alt="Faculty of Education" title="كلية التربية">
+        <img src="assets/images/logo-techno.jpg" alt="Educational Technology" title="تكنولوجيا التعليم">
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== LOGIN SECTION ========== -->
+  <section class="login-page">
+    <div class="login-container">
+      <div class="login-card">
+        <!-- Logo -->
+        <div class="login-logo">
+          <div class="login-logo-icon">
+            <img src="assets/images/nexora-logo.png" alt="Nexora Logo">
+          </div>
+          <h1>مرحباً بك في <span>Nexora</span></h1>
+          <p>سجّل دخولك لبدء رحلتك التعليمية</p>
+        </div>
+
+        <!-- Redirect Notice (shown when redirected from course page) -->
+        <div class="redirect-notice" id="redirectNotice">
+          <i class="ph ph-info"></i>
+          يجب تسجيل الدخول أولاً للوصول إلى الكورسات
+        </div>
+
+        <!-- Tabs -->
+        <div class="login-tabs">
+          <button class="login-tab active" data-tab="login" id="loginTabBtn">تسجيل الدخول</button>
+          <button class="login-tab" data-tab="register" id="registerTabBtn">حساب جديد</button>
+        </div>
+
+        <!-- Messages -->
+        <div class="form-message" id="formMessage">
+          <i class="ph ph-warning-circle"></i>
+          <span></span>
+        </div>
+
+        <!-- Login Form -->
+        <form class="login-form active" id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">البريد الإلكتروني</label>
+            <div class="input-wrapper">
+              <input type="email" id="loginEmail" placeholder="أدخل بريدك الإلكتروني" required autocomplete="email">
+              <i class="ph ph-envelope input-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">كلمة المرور</label>
+            <div class="input-wrapper">
+              <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور" required autocomplete="current-password">
+              <i class="ph ph-lock input-icon"></i>
+              <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                <i class="ph ph-eye"></i>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="login-submit" id="loginSubmitBtn">
+            <span class="btn-text">تسجيل الدخول</span>
+            <div class="spinner"></div>
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form class="login-form" id="registerForm">
+          <div class="form-group">
+            <label for="regName">الاسم الكامل</label>
+            <div class="input-wrapper">
+              <input type="text" id="regName" placeholder="أدخل اسمك الكامل" required autocomplete="name">
+              <i class="ph ph-user input-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regEmail">البريد الإلكتروني</label>
+            <div class="input-wrapper">
+              <input type="email" id="regEmail" placeholder="أدخل بريدك الإلكتروني" required autocomplete="email">
+              <i class="ph ph-envelope input-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regPassword">كلمة المرور</label>
+            <div class="input-wrapper">
+              <input type="password" id="regPassword" placeholder="أنشئ كلمة مرور (6 أحرف على الأقل)" required minlength="6" autocomplete="new-password">
+              <i class="ph ph-lock input-icon"></i>
+              <button type="button" class="password-toggle" onclick="togglePassword('regPassword', this)">
+                <i class="ph ph-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regPasswordConfirm">تأكيد كلمة المرور</label>
+            <div class="input-wrapper">
+              <input type="password" id="regPasswordConfirm" placeholder="أعد كتابة كلمة المرور" required minlength="6" autocomplete="new-password">
+              <i class="ph ph-lock input-icon"></i>
+            </div>
+          </div>
+          <button type="submit" class="login-submit" id="registerSubmitBtn">
+            <span class="btn-text">إنشاء الحساب</span>
+            <div class="spinner"></div>
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <span>أو</span>
+        </div>
+
+        <button type="button" class="google-btn" id="googleLoginBtn">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+          الاستمرار باستخدام جوجل
+        </button>
+
+        <!-- Feature hints -->
+        <div class="login-features">
+          <div class="login-feature">
+            <i class="ph ph-shield-check"></i>
+            <span>تعلم آمن</span>
+          </div>
+          <div class="login-feature">
+            <i class="ph ph-certificate"></i>
+            <span>شهادات معتمدة</span>
+          </div>
+          <div class="login-feature">
+            <i class="ph ph-robot"></i>
+            <span>مرشد ذكي</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

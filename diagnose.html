@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تشخيص الشهادات - Nexora</title>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background: #111; color: #eee; padding: 40px; direction: rtl; }
+    h1 { color: #00ff88; }
+    .test { margin: 16px 0; padding: 16px; border: 1px solid #333; border-radius: 12px; }
+    .pass { border-color: #00ff88; background: rgba(0,255,136,0.05); }
+    .fail { border-color: #ff5252; background: rgba(255,82,82,0.05); }
+    .warn { border-color: #ffb300; background: rgba(255,179,0,0.05); }
+    pre { background: #222; padding: 12px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
+    #results { margin-top: 20px; }
+    button { padding: 12px 28px; background: #00ff88; color: #000; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; margin-top: 20px; }
+  </style>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/images/avatar.png">
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Nexora | منصة تنمية المهارات الرقمية">
+  <meta property="og:description" content="منصة Nexora المتكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية مع مرشد ذكاء اصطناعي">
+  <meta property="og:image" content="https://nexora-dc0e9.web.app/assets/images/nexora-logo.png">
+  <meta property="og:url" content="https://nexora-dc0e9.web.app/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <h1>🔍 تشخيص نظام الشهادات</h1>
+  <p>هذه الصفحة تفحص ما إذا كانت الشهادات محفوظة بشكل صحيح في Firebase.</p>
+  <div id="results">جاري الفحص...</div>
+  <button onclick="window.location.reload()">إعادة الفحص</button>
+  
+  <script type="module">
+    import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs } from './firebase-config.js';
+    
+    const results = document.getElementById('results');
+    
+    function addResult(title, status, detail) {
+      const cls = status === 'pass' ? 'pass' : status === 'fail' ? 'fail' : 'warn';
+      const icon = status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⚠️';
+      results.innerHTML += `<div class="test ${cls}"><strong>${icon} ${title}</strong><pre>${detail}</pre></div>`;
+    }
+    
+    results.innerHTML = '';
+    
+    // Test 1: Firebase connection
+    addResult('اتصال Firebase', 'pass', 'تم الاتصال بـ Firebase بنجاح');
+    
+    // Test 2: Auth state
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        addResult('تسجيل الدخول', 'fail', 'لم يتم تسجيل الدخول. يرجى تسجيل الدخول أولاً ثم العودة لهذه الصفحة.');
+        return;
+      }
+      
+      addResult('تسجيل الدخول', 'pass', `مسجل الدخول كـ: ${user.email}\nUID: ${user.uid}`);
+      
+      // Test 3: Check progress collection
+      try {
+        const progressSnapshot = await getDocs(collection(db, "users", user.uid, "progress"));
+        let progressData = '';
+        let certCount = 0;
+        
+        progressSnapshot.forEach(pDoc => {
+          const data = pDoc.data();
+          progressData += `\n📦 كورس ${pDoc.id}:\n`;
+          progressData += `  - certificateIssued: ${data.certificateIssued || false}\n`;
+          progressData += `  - postTestDone: ${data.postTestDone || false}\n`;
+          progressData += `  - postTestScore: ${data.postTestScore || 'N/A'}\n`;
+          progressData += `  - certMeta exists: ${!!data.certMeta}\n`;
+          
+          if (data.certMeta) {
+            progressData += `  - certMeta.courseTitle: ${data.certMeta.courseTitle}\n`;
+            progressData += `  - certMeta.score: ${data.certMeta.score}%\n`;
+            progressData += `  - certMeta.certificateId: ${data.certMeta.certificateId}\n`;
+            progressData += `  - certMeta.date: ${data.certMeta.date}\n`;
+          }
+          
+          if (data.certificateIssued) certCount++;
+        });
+        
+        if (progressSnapshot.empty) {
+          addResult('بيانات التقدم', 'warn', 'لا توجد بيانات تقدم محفوظة. لم تبدأ أي كورس بعد.');
+        } else {
+          addResult('بيانات التقدم', certCount > 0 ? 'pass' : 'warn', 
+            `عدد مستندات التقدم: ${progressSnapshot.size}\nعدد الشهادات المُصدرة: ${certCount}\n${progressData}`);
+        }
+      } catch (e) {
+        addResult('بيانات التقدم', 'fail', `خطأ في قراءة بيانات التقدم:\n${e.message}\n\nهذا يعني أن قواعد Firestore قد تمنع القراءة.`);
+      }
+      
+      // Test 4: Check old certificates collection
+      try {
+        const certsSnapshot = await getDocs(collection(db, "users", user.uid, "certificates"));
+        let certsData = '';
+        certsSnapshot.forEach(cDoc => {
+          certsData += `\n📜 شهادة ${cDoc.id}: ${JSON.stringify(cDoc.data(), null, 2)}`;
+        });
+        
+        addResult('مجموعة certificates (النظام القديم)', certsSnapshot.empty ? 'warn' : 'pass',
+          certsSnapshot.empty ? 'فارغة — لم يتم حفظ أي شهادة في المجموعة القديمة' : `عدد الشهادات: ${certsSnapshot.size}${certsData}`);
+      } catch (e) {
+        addResult('مجموعة certificates', 'fail', `خطأ في القراءة:\n${e.message}\n\nقواعد Firestore تمنع الوصول لهذه المجموعة!`);
+      }
+      
+      // Test 5: COURSES_DATA availability
+      const coursesAvailable = typeof COURSES_DATA !== 'undefined';
+      addResult('بيانات الكورسات (COURSES_DATA)', coursesAvailable ? 'pass' : 'fail',
+        coursesAvailable ? `متاحة — عدد الكورسات: ${COURSES_DATA.length}` : 'غير متاحة! ملف courses-data.js لم يتم تحميله في هذه الصفحة.');
+      
+      // Summary
+      addResult('ملخص التشخيص', 'warn', 'افتح هذه الصفحة بعد اجتياز اختبار كورس وعمل "احصل على الشهادة" لترى إذا تم حفظ certMeta.');
+    });
+  </script>
+  
+  <script src="js/courses-data.js"></script>
+</body>
+</html>

@@ -2,6 +2,19 @@
    Nexora — Landing Page JavaScript
    ========================================== */
 
+import { auth, db, onAuthStateChanged, signOut, doc, getDoc, collection, getDocs } from './firebase-config.js';
+
+let currentUserData = null; // Store fetched user details globally within this module
+
+/* ---- Course Navigation with Auth Check ---- */
+window.navigateToCourse = function(courseId) {
+  if (currentUserData) {
+    window.location.href = `course.html?id=${courseId}`;
+  } else {
+    window.location.href = `login.html?redirect=${courseId}`;
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ---- Theme Toggle ----
@@ -33,7 +46,189 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---- Smooth Scroll ----
   initSmoothScroll();
+
+  // ---- Auth Status in Navbar ----
+  initAuthStatus();
 });
+
+/* =============================================
+   AUTH STATUS IN NAVBAR
+   ============================================= */
+function initAuthStatus() {
+  const userProfile = document.getElementById('userProfile');
+  const userNameDisplay = document.getElementById('userNameDisplay');
+  const navLoginBtn = document.getElementById('navLoginBtn');
+  const navLogoutBtn = document.getElementById('navLogoutBtn');
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      if (navLoginBtn) navLoginBtn.style.display = 'none';
+      if (userProfile) userProfile.style.display = 'flex';
+      
+      // Fetch user name from Firestore
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          currentUserData = { id: user.uid, ...userDoc.data() };
+          if (userNameDisplay) {
+            userNameDisplay.textContent = currentUserData.name || user.displayName || 'المتعلم';
+          }
+        } else {
+          currentUserData = { id: user.uid, email: user.email };
+          if (userNameDisplay) userNameDisplay.textContent = user.displayName || 'المتعلم';
+        }
+      } catch (e) {
+        console.error("Error fetching user data:", e);
+        currentUserData = { id: user.uid, email: user.email };
+        if (userNameDisplay) userNameDisplay.textContent = user.displayName || 'المتعلم';
+      }
+
+      // Load Certificates
+      loadUserCertificates(user.uid);
+      
+      // Show Navbar Link
+      const navCertLink = document.getElementById('navCertLink');
+      if (navCertLink) navCertLink.style.display = 'inline-flex';
+    } else {
+      currentUserData = null;
+      if (navLoginBtn) navLoginBtn.style.display = 'inline-flex';
+      if (userProfile) userProfile.style.display = 'none';
+      
+      // Hide Navbar Link
+      const navCertLink = document.getElementById('navCertLink');
+      if (navCertLink) navCertLink.style.display = 'none';
+
+      // Hide Certificates Section
+      const certSection = document.getElementById('myCertificates');
+      if (certSection) certSection.style.display = 'none';
+    }
+  });
+
+  if (navLogoutBtn) {
+    navLogoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.reload();
+    });
+  }
+}
+
+/* =============================================
+   LOAD AND RENDER CERTIFICATES
+   ============================================= */
+async function loadUserCertificates(userId) {
+  const certSection = document.getElementById('myCertificates');
+  const certGrid = document.getElementById('certificatesGrid');
+  if (!certSection || !certGrid) return;
+
+  // Show section immediately with loading state
+  certSection.style.display = 'block';
+  certGrid.innerHTML = `
+    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+      <i class="ph ph-circle-notch ph-spin" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+      جاري تحميل شهاداتك...
+    </div>
+  `;
+
+  try {
+    // Read certificates from progress documents (same path that already works)
+    const progressSnapshot = await getDocs(collection(db, "users", userId, "progress"));
+    const certs = [];
+    
+    progressSnapshot.forEach(pDoc => {
+      const pData = pDoc.data();
+      
+      if (pData.certificateIssued) {
+        // Check for new format (certMeta saved alongside progress)
+        if (pData.certMeta) {
+          certs.push(pData.certMeta);
+        } else {
+          // Fallback: Build cert card from progress data + course data
+          const courseId = parseInt(pDoc.id);
+          // Access COURSES_DATA from global scope (loaded via script tag)
+          const coursesArr = (typeof COURSES_DATA !== 'undefined') ? COURSES_DATA : [];
+          const crs = coursesArr.find(c => c.id == courseId);
+          if (crs) {
+            const pct = pData.postTestScore ? Math.round((pData.postTestScore / crs.questions.length) * 100) : '—';
+            certs.push({
+              courseId: crs.id,
+              courseTitle: crs.title,
+              courseIcon: crs.icon,
+              score: pct,
+              date: 'سجل سابق',
+              certificateId: 'REC-' + courseId,
+              timestamp: 0
+            });
+          }
+        }
+      }
+    });
+
+    console.log(`Found ${certs.length} certificates from progress documents.`);
+
+    if (certs.length === 0) {
+      certGrid.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: rgba(0, 255, 136, 0.02); border: 1px dashed var(--border-color); border-radius: var(--radius-lg);">
+          <i class="ph ph-certificate" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px; display: block;"></i>
+          <h3 style="margin-bottom: 12px; font-weight: 700;">لا توجد شهادات حتى الآن</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 24px;">ابدأ رحلتك التعليمية الآن واجتز الاختبارات لتحصل على شهاداتك المعتمدة</p>
+          <div style="display: flex; gap: 12px; justify-content: center;">
+            <button class="btn-primary" onclick="window.location.reload()">
+              تحديث البيانات
+            </button>
+            <button class="btn-secondary" onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">
+              استكشف الكورسات
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // Sort: newest first
+    certs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    certGrid.innerHTML = certs.map(cert => `
+      <div class="certificate-card">
+        <div class="cert-card-icon">
+          <i class="ph ${cert.courseIcon || 'ph-certificate'}"></i>
+        </div>
+        <div class="cert-card-content">
+          <div class="cert-card-header">
+            <h3>${cert.courseTitle}</h3>
+            <span class="cert-card-score">${cert.score}${cert.score !== '—' ? '%' : ''}</span>
+          </div>
+          <p class="cert-card-date">تاريخ الإنجاز: ${cert.date}</p>
+          <div class="cert-card-footer">
+            <span class="cert-card-id">${String(cert.certificateId || '').startsWith('REC') ? 'شهادة مسجلة' : 'ID: ' + String(cert.certificateId || '').split('-').slice(0, 3).join('-') + '...'}</span>
+            <a href="course.html?id=${cert.courseId}&jump=certificate" class="cert-view-btn">
+              عرض الشهادة
+              <i class="ph ph-arrow-left"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Force section visibility and trigger reveal animations
+    certSection.style.display = 'block';
+    const navCertLink = document.getElementById('navCertLink');
+    if (navCertLink) navCertLink.style.display = 'inline-block';
+    
+    // Help the "reveal" observer see the newly shown section
+    if (typeof reveal === 'function') reveal();
+    
+    console.log("UI Updated: Certificate section should now be visible.");
+
+  } catch (e) {
+    console.error("CRITICAL: Error loading certificates:", e);
+    certGrid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; color: #ff5252; padding: 40px;">
+        <p>حدث خطأ أثناء تحميل الشهادات. يرجى المحاولة مرة أخرى.</p>
+        <button class="btn-primary" style="margin-top: 16px;" onclick="window.location.reload()">إعادة تحميل</button>
+      </div>
+    `;
+  }
+}
 
 /* =============================================
    THEME TOGGLE
