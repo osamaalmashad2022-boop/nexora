@@ -438,7 +438,7 @@ const SYSTEM_PROMPT = `أنت مرشد ذكي في منصة "Nexora" المخص�
 let conversationHistory = [];
 
 async function generateGeminiResponse(userMessage) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
   
   // Add user message to history
   conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
