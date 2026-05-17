@@ -418,9 +418,9 @@
           </a>
           <p>منصة متكاملة لتنمية المهارات الرقمية في إنتاج مصادر التعلم الرقمية باستخدام أحدث تقنيات الذكاء الاصطناعي</p>
           <div class="social-links">
-            <a href="https://www.facebook.com/share/1HMxedGmGJ/" class="social-link" target="_blank"><i class="ph ph-facebook-logo"></i></a>
-            <a href="https://youtube.com/@osospiracy5468?si=_SKB4Z-yZtEt14L-" class="social-link" target="_blank"><i class="ph ph-youtube-logo"></i></a>
-            <a href="https://www.linkedin.com/in/osama-almashad-9324b3340?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="social-link" target="_blank"><i class="ph ph-linkedin-logo"></i></a>
+            <a href="https://www.facebook.com/share/1HMxedGmGJ/" class="social-link" target="_blank" rel="noopener noreferrer"><i class="ph ph-facebook-logo"></i></a>
+            <a href="https://youtube.com/@osospiracy5468?si=_SKB4Z-yZtEt14L-" class="social-link" target="_blank" rel="noopener noreferrer"><i class="ph ph-youtube-logo"></i></a>
+            <a href="https://www.linkedin.com/in/osama-almashad-9324b3340?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" class="social-link" target="_blank" rel="noopener noreferrer"><i class="ph ph-linkedin-logo"></i></a>
           </div>
         </div>
         <div class="footer-col">
@@ -437,7 +437,7 @@
           <ul>
             <li><a href="goals.html">أهداف المنصة</a></li>
             <li><a href="index.html#ai-mentor">المرشد الذكي</a></li>
-            <li><a href="https://www.linkedin.com/in/osama-almashad-9324b3340?target=_blank">تواصل معنا</a></li>
+            <li><a href="https://www.linkedin.com/in/osama-almashad-9324b3340?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer">تواصل معنا</a></li>
             <li><a href="team.html">فريق العمل</a></li>
           </ul>
         </div>
@@ -479,6 +479,24 @@
       if (window.scrollY > 50) navbar.classList.add('scrolled');
       else navbar.classList.remove('scrolled');
     });
+
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinksEl = document.getElementById('navLinks');
+    if (menuToggle && navLinksEl) {
+      menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navLinksEl.classList.toggle('open');
+        document.body.style.overflow = navLinksEl.classList.contains('open') ? 'hidden' : '';
+      });
+      navLinksEl.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          menuToggle.classList.remove('active');
+          navLinksEl.classList.remove('open');
+          document.body.style.overflow = '';
+        });
+      });
+    }
 
     // Particles
     const canvas = document.getElementById('particles-canvas');

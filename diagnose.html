@@ -32,14 +32,22 @@
   <button onclick="window.location.reload()">إعادة الفحص</button>
   
   <script type="module">
-    import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs } from './firebase-config.js';
+    import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs } from './js/firebase-config.js';
     
     const results = document.getElementById('results');
     
     function addResult(title, status, detail) {
       const cls = status === 'pass' ? 'pass' : status === 'fail' ? 'fail' : 'warn';
       const icon = status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⚠️';
-      results.innerHTML += `<div class="test ${cls}"><strong>${icon} ${title}</strong><pre>${detail}</pre></div>`;
+      const div = document.createElement('div');
+      div.className = `test ${cls}`;
+      const strong = document.createElement('strong');
+      strong.textContent = `${icon} ${title}`;
+      const pre = document.createElement('pre');
+      pre.textContent = detail;
+      div.appendChild(strong);
+      div.appendChild(pre);
+      results.appendChild(div);
     }
     
     results.innerHTML = '';

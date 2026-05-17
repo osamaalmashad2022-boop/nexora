@@ -6,3 +6,8 @@ node_modules/
 .DS_Store
 Thumbs.db
 .env
+
+# Firebase CLI artifacts
+.firebase/
+firebase-debug.log
+.runtimeconfig.json

@@ -10,7 +10,9 @@
       "**/node_modules/**",
       "**/*.bat",
       "**/*.exe",
-      "**/*.sh"
+      "**/*.sh",
+      "config.js",
+      "js/config.js"
     ]
   }
 }

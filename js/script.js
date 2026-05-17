@@ -8,7 +8,7 @@ let currentUserData = null; // Store fetched user details globally within this m
 
 /* ---- Course Navigation with Auth Check ---- */
 window.navigateToCourse = function(courseId) {
-  if (currentUserData) {
+  if (auth.currentUser) {
     window.location.href = `course.html?id=${courseId}`;
   } else {
     window.location.href = `login.html?redirect=${courseId}`;
@@ -577,8 +577,9 @@ function initChatbot() {
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       
-      // Basic formatting for Markdown-like response
-      let formattedRes = response.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Escape HTML entities to prevent XSS, then apply safe formatting
+      const escaped = response.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      let formattedRes = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       formattedRes = formattedRes.replace(/\n/g, '<br>');
       
       botMsg.innerHTML = formattedRes;
@@ -639,7 +640,7 @@ async function generateGeminiResponse(userMessage) {
                   window.location.protocol === 'file:';
   
   const url = isLocal ? 
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}` : 
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent` : 
     `/api/chat`;
   
   // Add user message to history
@@ -735,8 +736,9 @@ function initChatPreview() {
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       
-      // Basic formatting
-      let formattedRes = response.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Escape HTML entities to prevent XSS, then apply safe formatting
+      const escaped = response.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      let formattedRes = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       formattedRes = formattedRes.replace(/\n/g, '<br>');
       
       botMsg.innerHTML = formattedRes;

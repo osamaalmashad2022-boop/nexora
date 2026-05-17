@@ -339,31 +339,34 @@ function initCourseFlow(course, user, progress) {
           }
         }, () => {
           // Retry callback
-          progress.postTestDone = false;
-          saveProgress(user.id, course.id, progress);
-          document.getElementById('postTestResult').style.display = 'none';
-          document.getElementById('postTestQuestions').innerHTML = '';
-          initQuiz('post', course.questions, (retryScore) => {
-            progress.postTestScore = retryScore;
-            progress.postTestDone = true;
-            progress.postTestAttempts++;
+          function retryPostTest() {
+            progress.postTestDone = false;
             saveProgress(user.id, course.id, progress);
+            document.getElementById('postTestResult').style.display = 'none';
+            document.getElementById('postTestQuestions').innerHTML = '';
+            initQuiz('post', course.questions, (retryScore) => {
+              progress.postTestScore = retryScore;
+              progress.postTestDone = true;
+              progress.postTestAttempts++;
+              saveProgress(user.id, course.id, progress);
 
-            showQuizResult('post', retryScore, course.questions.length, () => {
-              showSection('stats');
-              updateStatsDashboard(progress, course);
+              showQuizResult('post', retryScore, course.questions.length, () => {
+                showSection('stats');
+                updateStatsDashboard(progress, course);
 
-              const retryPercentage = Math.round((retryScore / course.questions.length) * 100);
-              if (retryPercentage >= 60) {
-                progress.certificateIssued = true;
-                saveProgress(user.id, course.id, progress);
-                
-                // Save certificate metadata on retry pass
-                const certId = `CERT-${course.id}-${user.id.slice(-6)}-${Date.now().toString(36).toUpperCase()}`;
-                saveCertificateMetadata(user.id, course, retryScore, retryPercentage, certId);
-              }
-            }, arguments.callee);
-          });
+                const retryPercentage = Math.round((retryScore / course.questions.length) * 100);
+                if (retryPercentage >= 60) {
+                  progress.certificateIssued = true;
+                  saveProgress(user.id, course.id, progress);
+                  
+                  // Save certificate metadata on retry pass
+                  const certId = `CERT-${course.id}-${user.id.slice(-6)}-${Date.now().toString(36).toUpperCase()}`;
+                  saveCertificateMetadata(user.id, course, retryScore, retryPercentage, certId);
+                }
+              }, retryPostTest);
+            });
+          }
+          retryPostTest();
         });
       });
     }
