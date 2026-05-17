@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // === مجموعة المستخدمين ===
+    // كل مستخدم مسجّل يقدر يقرأ ويكتب بياناته الشخصية فقط
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // === بيانات التقدم الدراسي (مجموعة فرعية) ===
+      match /progress/{courseId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
