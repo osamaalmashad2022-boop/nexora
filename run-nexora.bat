@@ -13,7 +13,7 @@ echo.
 :: Open the default browser to the localhost port
 start http://localhost:8000
 
-:: Run the python http server
-python -m http.server 8000
+:: Run the python http server (Security: bind to localhost only)
+python -m http.server 8000 --bind 127.0.0.1
 
 pause

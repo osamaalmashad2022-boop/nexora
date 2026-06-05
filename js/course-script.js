@@ -7,12 +7,15 @@ import { auth, db, onAuthStateChanged, signOut, doc, setDoc, getDoc } from './fi
 let currentUserData = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const courseId = new URLSearchParams(window.location.search).get('id');
+  const rawCourseId = new URLSearchParams(window.location.search).get('id');
 
-  if (!courseId || !COURSES_DATA.find(c => c.id === parseInt(courseId))) {
+  // Security: Validate courseId is a valid numeric ID
+  if (!rawCourseId || !/^\d+$/.test(rawCourseId) || !COURSES_DATA.find(c => c.id === parseInt(rawCourseId))) {
     window.location.href = 'index.html';
     return;
   }
+
+  const courseId = rawCourseId;
 
   const course = COURSES_DATA.find(c => c.id === parseInt(courseId));
 
@@ -32,7 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Auth Check via Firebase ----
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = `login.html?redirect=${courseId || ''}`;
+      // Security: Validate redirect parameter to only allow numeric course IDs
+      const rawRedirect = courseId || '';
+      const safeRedirect = /^\d+$/.test(rawRedirect) ? rawRedirect : '';
+      window.location.href = `login.html?redirect=${safeRedirect}`;
       return;
     }
 
@@ -172,7 +178,20 @@ function populateCourseInfo(course) {
   document.getElementById('courseDesc').textContent = course.description;
   document.getElementById('courseDuration').textContent = course.duration;
   document.getElementById('courseLessons').textContent = `${course.lessons} دروس`;
-  document.getElementById('courseIframe').src = course.mindsmithUrl;
+  // Security: Validate iframe source domain before setting
+  const ALLOWED_IFRAME_DOMAINS = ['app.mindsmith.ai'];
+  try {
+    const iframeUrl = new URL(course.mindsmithUrl);
+    if (ALLOWED_IFRAME_DOMAINS.includes(iframeUrl.hostname)) {
+      document.getElementById('courseIframe').src = course.mindsmithUrl;
+    } else {
+      console.error('Blocked unauthorized iframe source:', iframeUrl.hostname);
+      document.getElementById('courseIframe').src = 'about:blank';
+    }
+  } catch (e) {
+    console.error('Invalid iframe URL:', e);
+    document.getElementById('courseIframe').src = 'about:blank';
+  }
 }
 
 /* =============================================
@@ -612,31 +631,52 @@ function initQuiz(type, questions, onComplete) {
   const answers = new Array(totalQ).fill(null);
   const labels = ['أ', 'ب', 'ج', 'د'];
 
+  // Security: Use DOM API instead of innerHTML to prevent XSS
   function renderQuestion(index) {
     const q = questions[index];
-    questionsContainer.innerHTML = `
-      <div class="question-card">
-        <span class="question-number">السؤال ${index + 1} من ${totalQ}</span>
-        <div class="question-text">${q.q}</div>
-        <div class="options-list">
-          ${q.options.map((opt, i) => `
-            <button class="option-btn ${answers[index] === i ? 'selected' : ''}" data-index="${i}">
-              <span class="option-label">${labels[i]}</span>
-              <span>${opt}</span>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
+    questionsContainer.innerHTML = '';
 
-    // Option click handlers
-    questionsContainer.querySelectorAll('.option-btn').forEach(btn => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+
+    const qNumber = document.createElement('span');
+    qNumber.className = 'question-number';
+    qNumber.textContent = `السؤال ${index + 1} من ${totalQ}`;
+    card.appendChild(qNumber);
+
+    const qText = document.createElement('div');
+    qText.className = 'question-text';
+    qText.textContent = q.q;
+    card.appendChild(qText);
+
+    const optionsList = document.createElement('div');
+    optionsList.className = 'options-list';
+
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = `option-btn${answers[index] === i ? ' selected' : ''}`;
+      btn.setAttribute('data-index', i);
+
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'option-label';
+      labelSpan.textContent = labels[i];
+      btn.appendChild(labelSpan);
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = opt;
+      btn.appendChild(textSpan);
+
       btn.addEventListener('click', () => {
-        answers[index] = parseInt(btn.getAttribute('data-index'));
-        renderQuestion(index); // Re-render to show selected
+        answers[index] = i;
+        renderQuestion(index);
         nextBtn.disabled = false;
       });
+
+      optionsList.appendChild(btn);
     });
+
+    card.appendChild(optionsList);
+    questionsContainer.appendChild(card);
 
     // Update progress
     const answeredCount = answers.filter(a => a !== null).length;
@@ -698,55 +738,99 @@ function showQuizResult(type, score, total, onContinue, onRetry) {
   const passed = percentage >= 60;
   const circumference = 2 * Math.PI * 70; // radius = 70
 
-  let resultHTML = `
-    <div class="quiz-result">
-      <div class="result-score-ring">
-        <svg viewBox="0 0 160 160">
-          <circle class="ring-bg" cx="80" cy="80" r="70"></circle>
-          <circle class="ring-fill ${!passed ? 'fail' : ''}" cx="80" cy="80" r="70"
-                  style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${circumference};" 
-                  id="${prefix}RingFill"></circle>
-        </svg>
-        <div class="result-score-text ${!passed ? 'fail' : ''}">${percentage}%</div>
-      </div>
-      <h3>${type === 'pre' ? 'نتيجة الاختبار القبلي' : (passed ? '🎉 أحسنت! نتيجة ممتازة' : '😔 حاول مرة أخرى')}</h3>
-      <p>${type === 'pre' 
-        ? 'هذا هو مستواك الحالي. تابع دراسة المحتوى لتحسين درجتك في الاختبار البعدي!' 
-        : (passed 
-          ? 'لقد اجتزت الاختبار بنجاح. يمكنك الآن الاطلاع على إحصائياتك والحصول على شهادتك!'
-          : 'لم تحقق درجة النجاح (60%). يمكنك إعادة المحاولة بعد مراجعة المحتوى.'
-        )
-      }</p>
-      <div class="result-details">
-        <div class="result-detail-item">
-          <div class="detail-value">${score}</div>
-          <div class="detail-label">إجابات صحيحة</div>
-        </div>
-        <div class="result-detail-item">
-          <div class="detail-value">${total - score}</div>
-          <div class="detail-label">إجابات خاطئة</div>
-        </div>
-        <div class="result-detail-item">
-          <div class="detail-value">${total}</div>
-          <div class="detail-label">إجمالي الأسئلة</div>
-        </div>
-      </div>
-      <div class="result-actions">
-        <button class="quiz-btn quiz-btn-next" id="${prefix}ContinueBtn">
-          ${type === 'pre' ? 'انتقل إلى المحتوى التعليمي' : (passed ? 'عرض الإحصائيات' : 'عرض الإحصائيات')}
-          <i class="ph ph-arrow-left"></i>
-        </button>
-        ${type === 'post' && !passed ? `
-          <button class="quiz-btn quiz-btn-prev" id="${prefix}RetryBtn">
-            <i class="ph ph-arrow-clockwise"></i>
-            إعادة الاختبار
-          </button>
-        ` : ''}
-      </div>
-    </div>
-  `;
+  // Security: Build result UI with DOM API instead of innerHTML
+  resultContainer.innerHTML = '';
 
-  resultContainer.innerHTML = resultHTML;
+  const resultDiv = document.createElement('div');
+  resultDiv.className = 'quiz-result';
+
+  // Score Ring (SVG)
+  const ringDiv = document.createElement('div');
+  ringDiv.className = 'result-score-ring';
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', '0 0 160 160');
+  const circleBg = document.createElementNS(svgNS, 'circle');
+  circleBg.setAttribute('class', 'ring-bg');
+  circleBg.setAttribute('cx', '80'); circleBg.setAttribute('cy', '80'); circleBg.setAttribute('r', '70');
+  const circleFill = document.createElementNS(svgNS, 'circle');
+  circleFill.setAttribute('class', `ring-fill${!passed ? ' fail' : ''}`);
+  circleFill.setAttribute('cx', '80'); circleFill.setAttribute('cy', '80'); circleFill.setAttribute('r', '70');
+  circleFill.style.strokeDasharray = circumference;
+  circleFill.style.strokeDashoffset = circumference;
+  circleFill.id = `${prefix}RingFill`;
+  svg.appendChild(circleBg);
+  svg.appendChild(circleFill);
+  ringDiv.appendChild(svg);
+  const scoreText = document.createElement('div');
+  scoreText.className = `result-score-text${!passed ? ' fail' : ''}`;
+  scoreText.textContent = `${percentage}%`;
+  ringDiv.appendChild(scoreText);
+  resultDiv.appendChild(ringDiv);
+
+  // Title
+  const h3 = document.createElement('h3');
+  h3.textContent = type === 'pre' ? 'نتيجة الاختبار القبلي' : (passed ? '🎉 أحسنت! نتيجة ممتازة' : '😔 حاول مرة أخرى');
+  resultDiv.appendChild(h3);
+
+  // Description
+  const p = document.createElement('p');
+  p.textContent = type === 'pre'
+    ? 'هذا هو مستواك الحالي. تابع دراسة المحتوى لتحسين درجتك في الاختبار البعدي!'
+    : (passed
+      ? 'لقد اجتزت الاختبار بنجاح. يمكنك الآن الاطلاع على إحصائياتك والحصول على شهادتك!'
+      : 'لم تحقق درجة النجاح (60%). يمكنك إعادة المحاولة بعد مراجعة المحتوى.');
+  resultDiv.appendChild(p);
+
+  // Details
+  const detailsDiv = document.createElement('div');
+  detailsDiv.className = 'result-details';
+  const detailItems = [
+    { value: score, label: 'إجابات صحيحة' },
+    { value: total - score, label: 'إجابات خاطئة' },
+    { value: total, label: 'إجمالي الأسئلة' }
+  ];
+  detailItems.forEach(item => {
+    const detailItem = document.createElement('div');
+    detailItem.className = 'result-detail-item';
+    const valDiv = document.createElement('div');
+    valDiv.className = 'detail-value';
+    valDiv.textContent = item.value;
+    const lblDiv = document.createElement('div');
+    lblDiv.className = 'detail-label';
+    lblDiv.textContent = item.label;
+    detailItem.appendChild(valDiv);
+    detailItem.appendChild(lblDiv);
+    detailsDiv.appendChild(detailItem);
+  });
+  resultDiv.appendChild(detailsDiv);
+
+  // Actions
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'result-actions';
+
+  const continueBtn = document.createElement('button');
+  continueBtn.className = 'quiz-btn quiz-btn-next';
+  continueBtn.id = `${prefix}ContinueBtn`;
+  continueBtn.textContent = type === 'pre' ? 'انتقل إلى المحتوى التعليمي' : 'عرض الإحصائيات';
+  const arrowIcon = document.createElement('i');
+  arrowIcon.className = 'ph ph-arrow-left';
+  continueBtn.appendChild(arrowIcon);
+  actionsDiv.appendChild(continueBtn);
+
+  if (type === 'post' && !passed) {
+    const retryBtnEl = document.createElement('button');
+    retryBtnEl.className = 'quiz-btn quiz-btn-prev';
+    retryBtnEl.id = `${prefix}RetryBtn`;
+    const retryIcon = document.createElement('i');
+    retryIcon.className = 'ph ph-arrow-clockwise';
+    retryBtnEl.appendChild(retryIcon);
+    retryBtnEl.appendChild(document.createTextNode(' إعادة الاختبار'));
+    actionsDiv.appendChild(retryBtnEl);
+  }
+
+  resultDiv.appendChild(actionsDiv);
+  resultContainer.appendChild(resultDiv);
   resultContainer.style.display = 'block';
 
   // Animate ring
@@ -791,27 +875,57 @@ function showCompletedQuizSummary(type, score, total, onContinue) {
   const percentage = Math.round((score / total) * 100);
   const circumference = 2 * Math.PI * 70;
 
-  resultContainer.innerHTML = `
-    <div class="quiz-result">
-      <div class="result-score-ring">
-        <svg viewBox="0 0 160 160">
-          <circle class="ring-bg" cx="80" cy="80" r="70"></circle>
-          <circle class="ring-fill" cx="80" cy="80" r="70"
-                  style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${circumference};" 
-                  id="${prefix}RingFillSummary"></circle>
-        </svg>
-        <div class="result-score-text">${percentage}%</div>
-      </div>
-      <h3>✅ تم إكمال الاختبار القبلي مسبقاً</h3>
-      <p>درجتك: ${score} من ${total} — يمكنك الانتقال مباشرة إلى المحتوى التعليمي</p>
-      <div class="result-actions">
-        <button class="quiz-btn quiz-btn-next" id="${prefix}ContinueSummaryBtn">
-          انتقل إلى المحتوى التعليمي
-          <i class="ph ph-arrow-left"></i>
-        </button>
-      </div>
-    </div>
-  `;
+  // Security: Build summary UI with DOM API instead of innerHTML
+  resultContainer.innerHTML = '';
+
+  const resultDiv = document.createElement('div');
+  resultDiv.className = 'quiz-result';
+
+  // Score Ring (SVG)
+  const ringDiv = document.createElement('div');
+  ringDiv.className = 'result-score-ring';
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', '0 0 160 160');
+  const circleBg = document.createElementNS(svgNS, 'circle');
+  circleBg.setAttribute('class', 'ring-bg');
+  circleBg.setAttribute('cx', '80'); circleBg.setAttribute('cy', '80'); circleBg.setAttribute('r', '70');
+  const circleFill = document.createElementNS(svgNS, 'circle');
+  circleFill.setAttribute('class', 'ring-fill');
+  circleFill.setAttribute('cx', '80'); circleFill.setAttribute('cy', '80'); circleFill.setAttribute('r', '70');
+  circleFill.style.strokeDasharray = circumference;
+  circleFill.style.strokeDashoffset = circumference;
+  circleFill.id = `${prefix}RingFillSummary`;
+  svg.appendChild(circleBg);
+  svg.appendChild(circleFill);
+  ringDiv.appendChild(svg);
+  const scoreText = document.createElement('div');
+  scoreText.className = 'result-score-text';
+  scoreText.textContent = `${percentage}%`;
+  ringDiv.appendChild(scoreText);
+  resultDiv.appendChild(ringDiv);
+
+  const h3 = document.createElement('h3');
+  h3.textContent = '✅ تم إكمال الاختبار القبلي مسبقاً';
+  resultDiv.appendChild(h3);
+
+  const p = document.createElement('p');
+  p.textContent = `درجتك: ${score} من ${total} — يمكنك الانتقال مباشرة إلى المحتوى التعليمي`;
+  resultDiv.appendChild(p);
+
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'result-actions';
+  const continueBtn = document.createElement('button');
+  continueBtn.className = 'quiz-btn quiz-btn-next';
+  continueBtn.id = `${prefix}ContinueSummaryBtn`;
+  continueBtn.textContent = 'انتقل إلى المحتوى التعليمي';
+  const arrowIcon = document.createElement('i');
+  arrowIcon.className = 'ph ph-arrow-left';
+  continueBtn.appendChild(arrowIcon);
+  actionsDiv.appendChild(continueBtn);
+  resultDiv.appendChild(actionsDiv);
+
+  resultContainer.appendChild(resultDiv);
   resultContainer.style.display = 'block';
 
   setTimeout(() => {

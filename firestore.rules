@@ -5,16 +5,36 @@ service cloud.firestore {
     // === مجموعة المستخدمين ===
     // كل مستخدم مسجّل يقدر يقرأ ويكتب بياناته الشخصية فقط
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // Security: Schema validation — منع كتابة حقول حساسة مثل role
+      allow create: if request.auth != null && request.auth.uid == userId
+                    && request.resource.data.keys().hasAll(['name', 'email', 'createdAt'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() <= 100
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 320
+                    && request.resource.data.createdAt is string
+                    && !('role' in request.resource.data)
+                    && !('isAdmin' in request.resource.data);
+
+      allow update: if request.auth != null && request.auth.uid == userId
+                    && !('role' in request.resource.data)
+                    && !('isAdmin' in request.resource.data);
 
       // === بيانات التقدم الدراسي (مجموعة فرعية) ===
       match /progress/{courseId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+        // Security: Limit document size to prevent abuse
+        allow write: if request.auth != null && request.auth.uid == userId
+                     && request.resource.size() < 15000;
       }
 
       // === بيانات الشهادات (مجموعة فرعية) ===
       match /certificates/{certId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && request.auth.uid == userId
+                     && request.resource.size() < 10000;
       }
     }
   }

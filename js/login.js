@@ -88,7 +88,9 @@ registerTabBtn.addEventListener('click', () => {
 
 // ---- Check if redirected ----
 const urlParams = new URLSearchParams(window.location.search);
-const redirectCourse = urlParams.get('redirect');
+const rawRedirect = urlParams.get('redirect');
+// Security: Only allow numeric course IDs (1-4) to prevent Open Redirect attacks
+const redirectCourse = (rawRedirect && /^[1-4]$/.test(rawRedirect)) ? rawRedirect : null;
 if (redirectCourse) {
   document.getElementById('redirectNotice').style.display = 'block';
 }
@@ -160,10 +162,15 @@ registerForm.addEventListener('submit', async (e) => {
     showMessage('تم إنشاء الحساب بنجاح! جارٍ التحويل...', 'success');
   } catch (error) {
     btn.classList.remove('loading');
+    console.error('Registration error:', error);
     if (error.code === 'auth/email-already-in-use') {
       showMessage('هذا البريد الإلكتروني مسجل بالفعل', 'error');
+    } else if (error.code === 'auth/weak-password') {
+      showMessage('كلمة المرور ضعيفة جداً. يرجى اختيار كلمة مرور أقوى', 'error');
+    } else if (error.code === 'auth/invalid-email') {
+      showMessage('البريد الإلكتروني غير صالح', 'error');
     } else {
-      showMessage('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
+      showMessage('حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى', 'error');
     }
   }
 });
@@ -189,10 +196,13 @@ loginForm.addEventListener('submit', async (e) => {
     showMessage('تم تسجيل الدخول بنجاح! جارٍ التحويل...', 'success');
   } catch (error) {
     btn.classList.remove('loading');
+    console.error('Login error:', error);
     if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
       showMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error');
+    } else if (error.code === 'auth/too-many-requests') {
+      showMessage('تم تجاوز عدد المحاولات المسموح. يرجى المحاولة لاحقاً', 'error');
     } else {
-      showMessage('حدث خطأ أثناء تسجيل الدخول: ' + error.message, 'error');
+      showMessage('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى', 'error');
     }
   }
 });
@@ -222,8 +232,8 @@ if (googleLoginBtn) {
       showMessage('تم تسجيل الدخول بجوجل بنجاح! جارٍ التحويل...', 'success');
       // Wait for onAuthStateChanged to do redirect
     } catch (error) {
-      console.error(error);
-      showMessage('حدث خطأ أثناء تسجيل الدخول بجوجل: ' + error.message, 'error');
+      console.error('Google sign-in error:', error);
+      showMessage('حدث خطأ أثناء تسجيل الدخول بجوجل. يرجى المحاولة مرة أخرى', 'error');
     }
   });
 }

@@ -8,10 +8,14 @@ let currentUserData = null; // Store fetched user details globally within this m
 
 /* ---- Course Navigation with Auth Check ---- */
 window.navigateToCourse = function(courseId) {
+  // Security: Validate courseId is a valid number
+  const safeId = parseInt(courseId);
+  if (isNaN(safeId) || safeId < 1 || safeId > 10) return;
+  
   if (auth.currentUser) {
-    window.location.href = `course.html?id=${courseId}`;
+    window.location.href = `course.html?id=${safeId}`;
   } else {
-    window.location.href = `login.html?redirect=${courseId}`;
+    window.location.href = `login.html?redirect=${safeId}`;
   }
 };
 
