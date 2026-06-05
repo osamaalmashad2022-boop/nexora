@@ -351,12 +351,8 @@ function initParticles() {
   }
 
   function connectParticles() {
-    for (let i = 0; i < particles.length; i++) {
-      const p1 = particles[i];
-      if (!p1) continue;
-      for (let j = i + 1; j < particles.length; j++) {
-        const p2 = particles[j];
-        if (!p2) continue;
+    particles.forEach((p1, i) => {
+      particles.slice(i + 1).forEach(p2 => {
         const dx = p1.x - p2.x;
         const dy = p1.y - p2.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -370,8 +366,8 @@ function initParticles() {
           ctx.lineTo(p2.x, p2.y);
           ctx.stroke();
         }
-      }
-    }
+      });
+    });
   }
 
   function animate() {
