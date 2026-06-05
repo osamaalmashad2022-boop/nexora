@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>تشخيص الشهادات - Nexora</title>
+  <title>طھط´ط®ظٹطµ ط§ظ„ط´ظ‡ط§ط¯ط§طھ - Nexora</title>
   <style>
     body { font-family: 'Tajawal', sans-serif; background: #111; color: #eee; padding: 40px; direction: rtl; }
     h1 { color: #00ff88; }
@@ -18,8 +18,8 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/images/avatar.png">
   <!-- Open Graph Meta Tags -->
-  <meta property="og:title" content="Nexora | منصة تنمية المهارات الرقمية">
-  <meta property="og:description" content="منصة Nexora المتكاملة لتنمية مهاراتك في تصميم وإنتاج مصادر التعلم الرقمية مع مرشد ذكاء اصطناعي">
+  <meta property="og:title" content="Nexora | ظ…ظ†طµط© طھظ†ظ…ظٹط© ط§ظ„ظ…ظ‡ط§ط±ط§طھ ط§ظ„ط±ظ‚ظ…ظٹط©">
+  <meta property="og:description" content="ظ…ظ†طµط© Nexora ط§ظ„ظ…طھظƒط§ظ…ظ„ط© ظ„طھظ†ظ…ظٹط© ظ…ظ‡ط§ط±ط§طھظƒ ظپظٹ طھطµظ…ظٹظ… ظˆط¥ظ†طھط§ط¬ ظ…طµط§ط¯ط± ط§ظ„طھط¹ظ„ظ… ط§ظ„ط±ظ‚ظ…ظٹط© ظ…ط¹ ظ…ط±ط´ط¯ ط°ظƒط§ط، ط§طµط·ظ†ط§ط¹ظٹ">
   <meta property="og:image" content="https://zednyskill.app/assets/images/og-preview.png">
   <meta property="og:image:width" content="1024">
   <meta property="og:image:height" content="1024">
@@ -30,10 +30,10 @@
   <meta name="twitter:image" content="https://zednyskill.app/assets/images/og-preview.png">
 </head>
 <body>
-  <h1>🔍 تشخيص نظام الشهادات</h1>
-  <p>هذه الصفحة تفحص ما إذا كانت الشهادات محفوظة بشكل صحيح في Firebase.</p>
-  <div id="results">جاري الفحص...</div>
-  <button onclick="window.location.reload()">إعادة الفحص</button>
+  <h1>ًں”چ طھط´ط®ظٹطµ ظ†ط¸ط§ظ… ط§ظ„ط´ظ‡ط§ط¯ط§طھ</h1>
+  <p>ظ‡ط°ظ‡ ط§ظ„طµظپط­ط© طھظپط­طµ ظ…ط§ ط¥ط°ط§ ظƒط§ظ†طھ ط§ظ„ط´ظ‡ط§ط¯ط§طھ ظ…ط­ظپظˆط¸ط© ط¨ط´ظƒظ„ طµط­ظٹط­ ظپظٹ Firebase.</p>
+  <div id="results">ط¬ط§ط±ظٹ ط§ظ„ظپط­طµ...</div>
+  <button onclick="window.location.reload()">ط¥ط¹ط§ط¯ط© ط§ظ„ظپط­طµ</button>
   
   <script type="module">
     import { auth, db, onAuthStateChanged, doc, getDoc, collection, getDocs } from './js/firebase-config.js';
@@ -42,7 +42,7 @@
     
     function addResult(title, status, detail) {
       const cls = status === 'pass' ? 'pass' : status === 'fail' ? 'fail' : 'warn';
-      const icon = status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⚠️';
+      const icon = status === 'pass' ? 'âœ…' : status === 'fail' ? 'â‌Œ' : 'âڑ ï¸ڈ';
       const div = document.createElement('div');
       div.className = `test ${cls}`;
       const strong = document.createElement('strong');
@@ -57,16 +57,16 @@
     results.innerHTML = '';
     
     // Test 1: Firebase connection
-    addResult('اتصال Firebase', 'pass', 'تم الاتصال بـ Firebase بنجاح');
+    addResult('ط§طھطµط§ظ„ Firebase', 'pass', 'طھظ… ط§ظ„ط§طھطµط§ظ„ ط¨ظ€ Firebase ط¨ظ†ط¬ط§ط­');
     
     // Test 2: Auth state
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        addResult('تسجيل الدخول', 'fail', 'لم يتم تسجيل الدخول. يرجى تسجيل الدخول أولاً ثم العودة لهذه الصفحة.');
+        addResult('طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„', 'fail', 'ظ„ظ… ظٹطھظ… طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„. ظٹط±ط¬ظ‰ طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„ ط£ظˆظ„ط§ظ‹ ط«ظ… ط§ظ„ط¹ظˆط¯ط© ظ„ظ‡ط°ظ‡ ط§ظ„طµظپط­ط©.');
         return;
       }
       
-      addResult('تسجيل الدخول', 'pass', `مسجل الدخول كـ: ${user.email}\nUID: ${user.uid}`);
+      addResult('طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„', 'pass', `ظ…ط³ط¬ظ„ ط§ظ„ط¯ط®ظˆظ„ ظƒظ€: ${user.email}\nUID: ${user.uid}`);
       
       // Test 3: Check progress collection
       try {
@@ -76,7 +76,7 @@
         
         progressSnapshot.forEach(pDoc => {
           const data = pDoc.data();
-          progressData += `\n📦 كورس ${pDoc.id}:\n`;
+          progressData += `\nًں“¦ ظƒظˆط±ط³ ${pDoc.id}:\n`;
           progressData += `  - certificateIssued: ${data.certificateIssued || false}\n`;
           progressData += `  - postTestDone: ${data.postTestDone || false}\n`;
           progressData += `  - postTestScore: ${data.postTestScore || 'N/A'}\n`;
@@ -93,13 +93,13 @@
         });
         
         if (progressSnapshot.empty) {
-          addResult('بيانات التقدم', 'warn', 'لا توجد بيانات تقدم محفوظة. لم تبدأ أي كورس بعد.');
+          addResult('ط¨ظٹط§ظ†ط§طھ ط§ظ„طھظ‚ط¯ظ…', 'warn', 'ظ„ط§ طھظˆط¬ط¯ ط¨ظٹط§ظ†ط§طھ طھظ‚ط¯ظ… ظ…ط­ظپظˆط¸ط©. ظ„ظ… طھط¨ط¯ط£ ط£ظٹ ظƒظˆط±ط³ ط¨ط¹ط¯.');
         } else {
-          addResult('بيانات التقدم', certCount > 0 ? 'pass' : 'warn', 
-            `عدد مستندات التقدم: ${progressSnapshot.size}\nعدد الشهادات المُصدرة: ${certCount}\n${progressData}`);
+          addResult('ط¨ظٹط§ظ†ط§طھ ط§ظ„طھظ‚ط¯ظ…', certCount > 0 ? 'pass' : 'warn', 
+            `ط¹ط¯ط¯ ظ…ط³طھظ†ط¯ط§طھ ط§ظ„طھظ‚ط¯ظ…: ${progressSnapshot.size}\nط¹ط¯ط¯ ط§ظ„ط´ظ‡ط§ط¯ط§طھ ط§ظ„ظ…ظڈطµط¯ط±ط©: ${certCount}\n${progressData}`);
         }
       } catch (e) {
-        addResult('بيانات التقدم', 'fail', `خطأ في قراءة بيانات التقدم:\n${e.message}\n\nهذا يعني أن قواعد Firestore قد تمنع القراءة.`);
+        addResult('ط¨ظٹط§ظ†ط§طھ ط§ظ„طھظ‚ط¯ظ…', 'fail', `ط®ط·ط£ ظپظٹ ظ‚ط±ط§ط،ط© ط¨ظٹط§ظ†ط§طھ ط§ظ„طھظ‚ط¯ظ…:\n${e.message}\n\nظ‡ط°ط§ ظٹط¹ظ†ظٹ ط£ظ† ظ‚ظˆط§ط¹ط¯ Firestore ظ‚ط¯ طھظ…ظ†ط¹ ط§ظ„ظ‚ط±ط§ط،ط©.`);
       }
       
       // Test 4: Check old certificates collection
@@ -107,25 +107,27 @@
         const certsSnapshot = await getDocs(collection(db, "users", user.uid, "certificates"));
         let certsData = '';
         certsSnapshot.forEach(cDoc => {
-          certsData += `\n📜 شهادة ${cDoc.id}: ${JSON.stringify(cDoc.data(), null, 2)}`;
+          certsData += `\nًں“œ ط´ظ‡ط§ط¯ط© ${cDoc.id}: ${JSON.stringify(cDoc.data(), null, 2)}`;
         });
         
-        addResult('مجموعة certificates (النظام القديم)', certsSnapshot.empty ? 'warn' : 'pass',
-          certsSnapshot.empty ? 'فارغة — لم يتم حفظ أي شهادة في المجموعة القديمة' : `عدد الشهادات: ${certsSnapshot.size}${certsData}`);
+        addResult('ظ…ط¬ظ…ظˆط¹ط© certificates (ط§ظ„ظ†ط¸ط§ظ… ط§ظ„ظ‚ط¯ظٹظ…)', certsSnapshot.empty ? 'warn' : 'pass',
+          certsSnapshot.empty ? 'ظپط§ط±ط؛ط© â€” ظ„ظ… ظٹطھظ… ط­ظپط¸ ط£ظٹ ط´ظ‡ط§ط¯ط© ظپظٹ ط§ظ„ظ…ط¬ظ…ظˆط¹ط© ط§ظ„ظ‚ط¯ظٹظ…ط©' : `ط¹ط¯ط¯ ط§ظ„ط´ظ‡ط§ط¯ط§طھ: ${certsSnapshot.size}${certsData}`);
       } catch (e) {
-        addResult('مجموعة certificates', 'fail', `خطأ في القراءة:\n${e.message}\n\nقواعد Firestore تمنع الوصول لهذه المجموعة!`);
+        addResult('ظ…ط¬ظ…ظˆط¹ط© certificates', 'fail', `ط®ط·ط£ ظپظٹ ط§ظ„ظ‚ط±ط§ط،ط©:\n${e.message}\n\nظ‚ظˆط§ط¹ط¯ Firestore طھظ…ظ†ط¹ ط§ظ„ظˆطµظˆظ„ ظ„ظ‡ط°ظ‡ ط§ظ„ظ…ط¬ظ…ظˆط¹ط©!`);
       }
       
       // Test 5: COURSES_DATA availability
       const coursesAvailable = typeof COURSES_DATA !== 'undefined';
-      addResult('بيانات الكورسات (COURSES_DATA)', coursesAvailable ? 'pass' : 'fail',
-        coursesAvailable ? `متاحة — عدد الكورسات: ${COURSES_DATA.length}` : 'غير متاحة! ملف courses-data.js لم يتم تحميله في هذه الصفحة.');
+      addResult('ط¨ظٹط§ظ†ط§طھ ط§ظ„ظƒظˆط±ط³ط§طھ (COURSES_DATA)', coursesAvailable ? 'pass' : 'fail',
+        coursesAvailable ? `ظ…طھط§ط­ط© â€” ط¹ط¯ط¯ ط§ظ„ظƒظˆط±ط³ط§طھ: ${COURSES_DATA.length}` : 'ط؛ظٹط± ظ…طھط§ط­ط©! ظ…ظ„ظپ courses-data.js ظ„ظ… ظٹطھظ… طھط­ظ…ظٹظ„ظ‡ ظپظٹ ظ‡ط°ظ‡ ط§ظ„طµظپط­ط©.');
       
       // Summary
-      addResult('ملخص التشخيص', 'warn', 'افتح هذه الصفحة بعد اجتياز اختبار كورس وعمل "احصل على الشهادة" لترى إذا تم حفظ certMeta.');
+      addResult('ظ…ظ„ط®طµ ط§ظ„طھط´ط®ظٹطµ', 'warn', 'ط§ظپطھط­ ظ‡ط°ظ‡ ط§ظ„طµظپط­ط© ط¨ط¹ط¯ ط§ط¬طھظٹط§ط² ط§ط®طھط¨ط§ط± ظƒظˆط±ط³ ظˆط¹ظ…ظ„ "ط§ط­طµظ„ ط¹ظ„ظ‰ ط§ظ„ط´ظ‡ط§ط¯ط©" ظ„طھط±ظ‰ ط¥ط°ط§ طھظ… ط­ظپط¸ certMeta.');
     });
   </script>
   
   <script src="js/courses-data.js"></script>
+  <script src="js/chatbot.js"></script>
 </body>
 </html>
+

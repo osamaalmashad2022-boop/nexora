@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStatsCounter();
 
   // ---- Floating Chatbot ----
-  initChatbot();
+  // initChatbot(); // Now handled globally in js/chatbot.js
 
   // ---- Chat Preview Interaction ----
   initChatPreview();
