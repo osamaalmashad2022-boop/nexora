@@ -204,12 +204,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       
-      // Escape HTML entities to prevent XSS, then apply safe formatting
-      const escaped = response.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      let formattedRes = escaped.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
-      formattedRes = formattedRes.replace(/\\n/g, '<br>');
-      
-      botMsg.innerHTML = formattedRes;
+      // Use DOM manipulation to avoid innerHTML and prevent XSS
+      const lines = response.split('\\n');
+      lines.forEach((line, index) => {
+        const parts = line.split(/\\*\\*(.*?)\\*\\*/g);
+        parts.forEach((part, i) => {
+          if (i % 2 === 1) {
+            const strong = document.createElement('strong');
+            strong.textContent = part;
+            botMsg.appendChild(strong);
+          } else if (part) {
+            botMsg.appendChild(document.createTextNode(part));
+          }
+        });
+        if (index < lines.length - 1) {
+          botMsg.appendChild(document.createElement('br'));
+        }
+      });
       messages.insertBefore(botMsg, typingEl);
     } catch (error) {
       console.error("Chatbot Error:", error);

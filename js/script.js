@@ -187,27 +187,64 @@ async function loadUserCertificates(userId) {
     // Sort: newest first
     certs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-    certGrid.innerHTML = certs.map(cert => `
-      <div class="certificate-card">
-        <div class="cert-card-icon">
-          <i class="ph ${cert.courseIcon || 'ph-certificate'}"></i>
-        </div>
-        <div class="cert-card-content">
-          <div class="cert-card-header">
-            <h3>${cert.courseTitle}</h3>
-            <span class="cert-card-score">${cert.score}${cert.score !== '—' ? '%' : ''}</span>
-          </div>
-          <p class="cert-card-date">تاريخ الإنجاز: ${cert.date}</p>
-          <div class="cert-card-footer">
-            <span class="cert-card-id">${String(cert.certificateId || '').startsWith('REC') ? 'شهادة مسجلة' : 'ID: ' + String(cert.certificateId || '').split('-').slice(0, 3).join('-') + '...'}</span>
-            <a href="course.html?id=${cert.courseId}&jump=certificate" class="cert-view-btn">
-              عرض الشهادة
-              <i class="ph ph-arrow-left"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-    `).join('');
+    certGrid.innerHTML = '';
+    
+    certs.forEach(cert => {
+      const card = document.createElement('div');
+      card.className = 'certificate-card';
+      
+      const iconDiv = document.createElement('div');
+      iconDiv.className = 'cert-card-icon';
+      const iconI = document.createElement('i');
+      // Ensure courseIcon doesn't contain malicious classes
+      const safeIcon = (cert.courseIcon || 'ph-certificate').split(' ')[0];
+      iconI.className = `ph ${safeIcon}`;
+      iconDiv.appendChild(iconI);
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'cert-card-content';
+      
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'cert-card-header';
+      const h3 = document.createElement('h3');
+      h3.textContent = cert.courseTitle || 'شهادة إتمام';
+      const scoreSpan = document.createElement('span');
+      scoreSpan.className = 'cert-card-score';
+      scoreSpan.textContent = `${cert.score}${cert.score !== '—' ? '%' : ''}`;
+      headerDiv.appendChild(h3);
+      headerDiv.appendChild(scoreSpan);
+      
+      const dateP = document.createElement('p');
+      dateP.className = 'cert-card-date';
+      dateP.textContent = `تاريخ الإنجاز: ${cert.date || 'غير محدد'}`;
+      
+      const footerDiv = document.createElement('div');
+      footerDiv.className = 'cert-card-footer';
+      const idSpan = document.createElement('span');
+      idSpan.className = 'cert-card-id';
+      idSpan.textContent = String(cert.certificateId || '').startsWith('REC') ? 'شهادة مسجلة' : 'ID: ' + String(cert.certificateId || '').split('-').slice(0, 3).join('-') + '...';
+      
+      const viewBtn = document.createElement('a');
+      // Ensure courseId is URL safe
+      viewBtn.href = `course.html?id=${encodeURIComponent(cert.courseId || '')}&jump=certificate`;
+      viewBtn.className = 'cert-view-btn';
+      viewBtn.textContent = 'عرض الشهادة ';
+      const arrowI = document.createElement('i');
+      arrowI.className = 'ph ph-arrow-left';
+      viewBtn.appendChild(arrowI);
+      
+      footerDiv.appendChild(idSpan);
+      footerDiv.appendChild(viewBtn);
+      
+      contentDiv.appendChild(headerDiv);
+      contentDiv.appendChild(dateP);
+      contentDiv.appendChild(footerDiv);
+      
+      card.appendChild(iconDiv);
+      card.appendChild(contentDiv);
+      
+      certGrid.appendChild(card);
+    });
 
     // Force section visibility and trigger reveal animations
     certSection.style.display = 'block';
@@ -315,9 +352,13 @@ function initParticles() {
 
   function connectParticles() {
     for (let i = 0; i < particles.length; i++) {
+      const p1 = particles[i];
+      if (!p1) continue;
       for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
+        const p2 = particles[j];
+        if (!p2) continue;
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < 150) {
@@ -325,8 +366,8 @@ function initParticles() {
           ctx.beginPath();
           ctx.strokeStyle = `rgba(0, 255, 136, ${op})`;
           ctx.lineWidth = 0.5;
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
           ctx.stroke();
         }
       }
@@ -577,12 +618,23 @@ function initChatbot() {
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       
-      // Escape HTML entities to prevent XSS, then apply safe formatting
-      const escaped = response.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      let formattedRes = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      formattedRes = formattedRes.replace(/\n/g, '<br>');
-      
-      botMsg.innerHTML = formattedRes;
+      // Use DOM manipulation to avoid innerHTML and prevent XSS
+      const lines = response.split('\n');
+      lines.forEach((line, index) => {
+        const parts = line.split(/\*\*(.*?)\*\*/g);
+        parts.forEach((part, i) => {
+          if (i % 2 === 1) {
+            const strong = document.createElement('strong');
+            strong.textContent = part;
+            botMsg.appendChild(strong);
+          } else if (part) {
+            botMsg.appendChild(document.createTextNode(part));
+          }
+        });
+        if (index < lines.length - 1) {
+          botMsg.appendChild(document.createElement('br'));
+        }
+      });
       messages.insertBefore(botMsg, typingEl);
     } catch (error) {
       console.error("Chatbot Error:", error);
@@ -736,12 +788,23 @@ function initChatPreview() {
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       
-      // Escape HTML entities to prevent XSS, then apply safe formatting
-      const escaped = response.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-      let formattedRes = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      formattedRes = formattedRes.replace(/\n/g, '<br>');
-      
-      botMsg.innerHTML = formattedRes;
+      // Use DOM manipulation to avoid innerHTML and prevent XSS
+      const lines = response.split('\n');
+      lines.forEach((line, index) => {
+        const parts = line.split(/\*\*(.*?)\*\*/g);
+        parts.forEach((part, i) => {
+          if (i % 2 === 1) {
+            const strong = document.createElement('strong');
+            strong.textContent = part;
+            botMsg.appendChild(strong);
+          } else if (part) {
+            botMsg.appendChild(document.createTextNode(part));
+          }
+        });
+        if (index < lines.length - 1) {
+          botMsg.appendChild(document.createElement('br'));
+        }
+      });
       messages.insertBefore(botMsg, typingEl);
     } catch (error) {
       console.error("Chat Preview Error:", error);
