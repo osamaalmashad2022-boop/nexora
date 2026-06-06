@@ -148,17 +148,21 @@ function initParticles() {
   const count = Math.min(40, Math.floor(window.innerWidth / 30));
   for (let i = 0; i < count; i++) particles.push(new Particle());
   function connectParticles() {
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+    particles.forEach((p1, i) => {
+      particles.slice(i + 1).forEach(p2 => {
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 150) {
-          ctx.beginPath(); ctx.strokeStyle = `rgba(0, 255, 136, ${(1 - dist / 150) * 0.08})`;
-          ctx.lineWidth = 0.5; ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0, 255, 136, ${(1 - dist / 150) * 0.08})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
         }
-      }
-    }
+      });
+    });
   }
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
