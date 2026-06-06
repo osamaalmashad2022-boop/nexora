@@ -594,7 +594,8 @@ function initChatbot() {
   // Send message
   async function sendMessage() {
     if (!input || !input.value.trim() || !messages) return;
-    const text = input.value.trim();
+    const rawText = input.value.trim();
+    const text = sanitizeInput(rawText);
 
     // User message
     const userMsg = document.createElement('div');
@@ -684,6 +685,12 @@ const SYSTEM_PROMPT = `أنت مرشد ذكي في منصة "Nexora" المخص�
 
 // Conversation history buffer to maintain context
 let conversationHistory = [];
+
+// ---- Security Helper ----
+function sanitizeInput(input) {
+  if (!input) return input;
+  return input.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
 
 async function generateGeminiResponse(userMessage) {
   // Check if we are running locally or on Vercel
@@ -813,7 +820,8 @@ function initChatPreview() {
 
   async function sendPreviewMessage() {
     if (!input.value.trim()) return;
-    const text = input.value.trim();
+    const rawText = input.value.trim();
+    const text = sanitizeInput(rawText);
 
     const userMsg = document.createElement('div');
     userMsg.className = 'chat-message user';

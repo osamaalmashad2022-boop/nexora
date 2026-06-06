@@ -12,6 +12,13 @@ import {
   getDoc
 } from './firebase-config.js';
 
+// ---- Security Helper ----
+function sanitizeInput(input) {
+  if (!input) return input;
+  return input.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
 // Setup Google Provider
 const googleProvider = new GoogleAuthProvider();
 
@@ -146,8 +153,8 @@ registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearMessage();
 
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
+  const name = sanitizeInput(document.getElementById('regName').value.trim());
+  const email = sanitizeInput(document.getElementById('regEmail').value.trim());
   const password = document.getElementById('regPassword').value;
   const confirmPassword = document.getElementById('regPasswordConfirm').value;
 
@@ -234,7 +241,7 @@ loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearMessage();
 
-  const email = document.getElementById('loginEmail').value.trim();
+  const email = sanitizeInput(document.getElementById('loginEmail').value.trim());
   const password = document.getElementById('loginPassword').value;
 
   // Validation: empty fields

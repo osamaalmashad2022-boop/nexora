@@ -20,6 +20,12 @@ const SYSTEM_PROMPT = `أنت مرشد ذكي في منصة "Nexora" المخص�
 // Conversation history buffer to maintain context
 let conversationHistory = [];
 
+// ---- Security Helper ----
+function sanitizeInput(input) {
+  if (!input) return input;
+  return input.toString().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 // ---- Chat Persistence Helpers ----
 const CHAT_STORAGE_KEY = 'nexora-chat-history';
 const CHAT_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -248,7 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Send message
   async function sendMessage() {
     if (!input || !input.value.trim() || !messages) return;
-    const text = input.value.trim();
+    const rawText = input.value.trim();
+    const text = sanitizeInput(rawText);
 
     // User message
     const userMsg = document.createElement('div');
