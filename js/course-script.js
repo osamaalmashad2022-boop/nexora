@@ -237,13 +237,13 @@ async function saveProgress(userId, courseId, progress) {
    ============================================= */
 function initCourseFlow(course, user, progress) {
   const steps = ['pre-test', 'content', 'post-test', 'stats', 'certificate'];
-  const sections = {
-    'pre-test': document.getElementById('preTestSection'),
-    'content': document.getElementById('contentSection'),
-    'post-test': document.getElementById('postTestSection'),
-    'stats': document.getElementById('statsSection'),
-    'certificate': document.getElementById('certificateSection')
-  };
+  const sectionsMap = new Map([
+    ['pre-test', document.getElementById('preTestSection')],
+    ['content', document.getElementById('contentSection')],
+    ['post-test', document.getElementById('postTestSection')],
+    ['stats', document.getElementById('statsSection')],
+    ['certificate', document.getElementById('certificateSection')]
+  ]);
 
   const urlParams = new URLSearchParams(window.location.search);
   const jumpTo = urlParams.get('jump');
@@ -287,9 +287,10 @@ function initCourseFlow(course, user, progress) {
   function showSection(step) {
     console.log("Showing section:", step);
     currentStep = step;
-    Object.values(sections).forEach(s => s && s.classList.remove('active'));
-    if (sections[step]) {
-      sections[step].classList.add('active');
+    sectionsMap.forEach(s => s && s.classList.remove('active'));
+    const targetSection = sectionsMap.get(step);
+    if (targetSection) {
+      targetSection.classList.add('active');
       try {
         if (step === 'certificate') populateCertificate(user, course, progress);
         if (step === 'stats') updateStatsDashboard(progress, course);
@@ -637,7 +638,7 @@ function initQuiz(type, questions, onComplete) {
 
   // Security: Use DOM API instead of innerHTML to prevent XSS
   function renderQuestion(index) {
-    const q = questions[index];
+    const q = questions.at(index);
     questionsContainer.innerHTML = '';
 
     const card = document.createElement('div');
@@ -658,12 +659,12 @@ function initQuiz(type, questions, onComplete) {
 
     q.options.forEach((opt, i) => {
       const btn = document.createElement('button');
-      btn.className = `option-btn${answers[index] === i ? ' selected' : ''}`;
+      btn.className = `option-btn${answers.at(index) === i ? ' selected' : ''}`;
       btn.setAttribute('data-index', i);
 
       const labelSpan = document.createElement('span');
       labelSpan.className = 'option-label';
-      labelSpan.textContent = labels[i];
+      labelSpan.textContent = labels.at(i);
       btn.appendChild(labelSpan);
 
       const textSpan = document.createElement('span');
@@ -671,7 +672,7 @@ function initQuiz(type, questions, onComplete) {
       btn.appendChild(textSpan);
 
       btn.addEventListener('click', () => {
-        answers[index] = i;
+        answers.splice(index, 1, i);
         renderQuestion(index);
         nextBtn.disabled = false;
       });
@@ -689,7 +690,7 @@ function initQuiz(type, questions, onComplete) {
 
     // Navigation visibility
     prevBtn.style.visibility = index > 0 ? 'visible' : 'hidden';
-    nextBtn.disabled = answers[index] === null;
+    nextBtn.disabled = answers.at(index) === null;
 
     if (index === totalQ - 1) {
       nextBtn.innerHTML = '<span>إنهاء الاختبار</span> <i class="ph ph-check-circle"></i>';
@@ -707,7 +708,7 @@ function initQuiz(type, questions, onComplete) {
       // Calculate score
       let score = 0;
       answers.forEach((a, i) => {
-        if (a === questions[i].correct) score++;
+        if (a === questions.at(i).correct) score++;
       });
       onComplete(score);
     }
