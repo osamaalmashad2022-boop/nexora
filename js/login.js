@@ -6,6 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
+  signInWithPopup,
   doc,
   setDoc,
   getDoc
@@ -267,11 +268,52 @@ loginForm.addEventListener('submit', async (e) => {
   }
 });
 
-// ---- Google Sign-in (Redirect-based to avoid COOP errors) ----
+// ---- Google Sign-in (Dual Strategy: Try Popup first, Fallback to Redirect) ----
 const googleLoginBtn = document.getElementById('googleLoginBtn');
 if (googleLoginBtn) {
-  googleLoginBtn.addEventListener('click', () => {
-    signInWithRedirect(auth, googleProvider);
+  googleLoginBtn.addEventListener('click', async () => {
+    clearMessage();
+    googleLoginBtn.disabled = true;
+    googleLoginBtn.style.opacity = '0.7';
+
+    try {
+      // 1. Try popup first (best for local development and standard browser settings)
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result && result.user) {
+        const user = result.user;
+        // Store in users collection if not exists
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (!userDoc.exists()) {
+            await setDoc(doc(db, "users", user.uid), {
+              name: user.displayName || 'مستخدم جوجل',
+              email: user.email,
+              createdAt: new Date().toISOString()
+            });
+          }
+        } catch (e) {
+          console.warn("Could not check/write to Firestore (check rules):", e);
+        }
+        showMessage('تم تسجيل الدخول بجوجل بنجاح! جارٍ التحويل...', 'success');
+      }
+    } catch (popupError) {
+      console.warn("signInWithPopup failed, trying redirect fallback:", popupError);
+      
+      // If the popup was blocked by browser blocker, notify the user
+      if (popupError.code === 'auth/popup-blocked') {
+        showMessage('تم حظر النافذة المنبثقة. جارٍ محاولة تسجيل الدخول عبر التحويل...', 'info');
+      }
+      
+      // 2. Fallback to redirect (especially if strict COOP headers block the popup communication on production)
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (redirectError) {
+        console.error("Google redirect fallback failed:", redirectError);
+        showMessage('حدث خطأ أثناء تسجيل الدخول بجوجل. يرجى المحاولة مرة أخرى', 'error');
+        googleLoginBtn.disabled = false;
+        googleLoginBtn.style.opacity = '1';
+      }
+    }
   });
 }
 
