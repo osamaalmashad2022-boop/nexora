@@ -20,6 +20,69 @@ const SYSTEM_PROMPT = `أنت مرشد ذكي في منصة "Nexora" المخص�
 // Conversation history buffer to maintain context
 let conversationHistory = [];
 
+// ---- Chat Persistence Helpers ----
+const CHAT_STORAGE_KEY = 'nexora-chat-history';
+const CHAT_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function saveChatToStorage(messagesContainer) {
+  if (!messagesContainer) return;
+  try {
+    const messages = [];
+    messagesContainer.querySelectorAll('.chat-message').forEach(msg => {
+      messages.push({
+        role: msg.classList.contains('user') ? 'user' : 'bot',
+        text: msg.textContent.trim()
+      });
+    });
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify({
+      messages: messages,
+      conversationHistory: conversationHistory,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    console.warn('Could not save chat history:', e);
+  }
+}
+
+function loadChatFromStorage() {
+  try {
+    const stored = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (!stored) return null;
+    const data = JSON.parse(stored);
+    // Expire after 24 hours
+    if (Date.now() - data.timestamp > CHAT_EXPIRY_MS) {
+      localStorage.removeItem(CHAT_STORAGE_KEY);
+      return null;
+    }
+    return data;
+  } catch (e) {
+    console.warn('Could not load chat history:', e);
+    return null;
+  }
+}
+
+function restoreMessages(messagesContainer, typingEl) {
+  const stored = loadChatFromStorage();
+  if (!stored || !stored.messages || stored.messages.length === 0) return;
+
+  // Restore conversation history for API context
+  if (stored.conversationHistory) {
+    conversationHistory = stored.conversationHistory;
+  }
+
+  // Clear existing messages (except the default welcome)
+  const existingMsgs = messagesContainer.querySelectorAll('.chat-message');
+  existingMsgs.forEach(msg => msg.remove());
+
+  // Restore messages
+  stored.messages.forEach(msg => {
+    const div = document.createElement('div');
+    div.className = `chat-message ${msg.role === 'user' ? 'user' : 'bot'}`;
+    div.textContent = msg.text;
+    messagesContainer.insertBefore(div, typingEl);
+  });
+}
+
 window.generateGeminiResponse = async function(userMessage) {
   // Check if we are running locally or on Vercel
   const isLocal = window.location.hostname === 'localhost' || 
@@ -139,6 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const footerBtn = document.getElementById('footerAiMentorBtn');
   if (!fab || !panel) return;
 
+  // Restore persisted messages
+  if (messages && typingEl) {
+    restoreMessages(messages, typingEl);
+  }
+
   fab.addEventListener('click', () => {
     panel.classList.toggle('open');
     if (panel.classList.contains('open') && input) {
@@ -198,16 +266,15 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // Call Gemini API
       const response = await window.generateGeminiResponse(text);
-      if (typingEl) typingEl.classList.add('active'); // Keep indicator until response is processed
       
       if (typingEl) typingEl.classList.remove('active');
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot';
       
       // Use DOM manipulation to avoid innerHTML and prevent XSS
-      const lines = response.split('\\n');
+      const lines = response.split('\n');
       lines.forEach((line, index) => {
-        const parts = line.split(/\\*\\*(.*?)\\*\\*/g);
+        const parts = line.split(/\*\*(.*?)\*\*/g);
         parts.forEach((part, i) => {
           if (i % 2 === 1) {
             const strong = document.createElement('strong');
@@ -222,6 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       messages.insertBefore(botMsg, typingEl);
+
+      // Persist chat after bot responds
+      saveChatToStorage(messages);
     } catch (error) {
       console.error("Chatbot Error:", error);
       if (typingEl) typingEl.classList.remove('active');
@@ -239,6 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       botMsg.textContent = errorText + " (تفاصيل الخطأ في الـ Console)";
       messages.insertBefore(botMsg, typingEl);
+
+      // Persist even error messages
+      saveChatToStorage(messages);
     }
     scrollToBottom();
   }

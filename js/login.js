@@ -4,7 +4,8 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   doc,
   setDoc,
   getDoc
@@ -95,8 +96,39 @@ if (redirectCourse) {
   document.getElementById('redirectNotice').style.display = 'block';
 }
 
-// Check logged in State is normally done via onAuthStateChanged, but for login page we just redirect.
-// It will handle later in script.js, but let's do a quick local check or auth state check:
+// ---- Email Validation Helper ----
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// ---- Handle Google Redirect Result (runs on page load after redirect) ----
+getRedirectResult(auth).then(async (result) => {
+  if (result && result.user) {
+    const user = result.user;
+    // Store in users collection if not exists
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          name: user.displayName || 'مستخدم جوجل',
+          email: user.email,
+          createdAt: new Date().toISOString()
+        });
+      }
+    } catch (e) {
+      console.warn("Could not check/write to Firestore (check rules):", e);
+    }
+    showMessage('تم تسجيل الدخول بجوجل بنجاح! جارٍ التحويل...', 'success');
+    // Redirect will be handled by onAuthStateChanged below
+  }
+}).catch((error) => {
+  if (error.code && error.code !== 'auth/popup-closed-by-user') {
+    console.error('Google redirect error:', error);
+    showMessage('حدث خطأ أثناء تسجيل الدخول بجوجل. يرجى المحاولة مرة أخرى', 'error');
+  }
+});
+
+// Check logged in state — redirect if already authenticated
 auth.onAuthStateChanged((user) => {
   if (user) {
     if (redirectCourse) {
@@ -118,16 +150,37 @@ registerForm.addEventListener('submit', async (e) => {
   const password = document.getElementById('regPassword').value;
   const confirmPassword = document.getElementById('regPasswordConfirm').value;
 
-  if (!name || !email || !password) {
+  // Validation: empty fields
+  if (!name || !email || !password || !confirmPassword) {
     showMessage('يرجى ملء جميع الحقول', 'error');
     return;
   }
 
+  // Validation: name length
+  if (name.length > 100) {
+    showMessage('الاسم يجب ألا يتجاوز 100 حرف', 'error');
+    return;
+  }
+
+  // Validation: name too short
+  if (name.length < 2) {
+    showMessage('يرجى إدخال اسم صحيح (حرفان على الأقل)', 'error');
+    return;
+  }
+
+  // Validation: email format
+  if (!isValidEmail(email)) {
+    showMessage('يرجى إدخال بريد إلكتروني صالح', 'error');
+    return;
+  }
+
+  // Validation: password length
   if (password.length < 6) {
     showMessage('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
     return;
   }
 
+  // Validation: password match
   if (password !== confirmPassword) {
     showMessage('كلمتا المرور غير متطابقتين', 'error');
     return;
@@ -183,8 +236,15 @@ loginForm.addEventListener('submit', async (e) => {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
 
+  // Validation: empty fields
   if (!email || !password) {
     showMessage('يرجى ملء جميع الحقول', 'error');
+    return;
+  }
+
+  // Validation: email format
+  if (!isValidEmail(email)) {
+    showMessage('يرجى إدخال بريد إلكتروني صالح', 'error');
     return;
   }
 
@@ -207,34 +267,11 @@ loginForm.addEventListener('submit', async (e) => {
   }
 });
 
-// ---- Google Sign-in ----
+// ---- Google Sign-in (Redirect-based to avoid COOP errors) ----
 const googleLoginBtn = document.getElementById('googleLoginBtn');
 if (googleLoginBtn) {
-  googleLoginBtn.addEventListener('click', async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      
-      // Store in users collection if not exists
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists()) {
-          await setDoc(doc(db, "users", user.uid), {
-            name: user.displayName || 'مستخدم جوجل',
-            email: user.email,
-            createdAt: new Date().toISOString()
-          });
-        }
-      } catch (e) {
-        console.warn("Could not check/write to Firestore (check rules):", e);
-      }
-
-      showMessage('تم تسجيل الدخول بجوجل بنجاح! جارٍ التحويل...', 'success');
-      // Wait for onAuthStateChanged to do redirect
-    } catch (error) {
-      console.error('Google sign-in error:', error);
-      showMessage('حدث خطأ أثناء تسجيل الدخول بجوجل. يرجى المحاولة مرة أخرى', 'error');
-    }
+  googleLoginBtn.addEventListener('click', () => {
+    signInWithRedirect(auth, googleProvider);
   });
 }
 

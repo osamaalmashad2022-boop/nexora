@@ -598,7 +598,7 @@
           <div class="form-group">
             <label for="regName">الاسم الكامل</label>
             <div class="input-wrapper">
-              <input type="text" id="regName" placeholder="أدخل اسمك الكامل" required autocomplete="name">
+              <input type="text" id="regName" placeholder="أدخل اسمك الكامل" required autocomplete="name" maxlength="100">
               <i class="ph ph-user input-icon"></i>
             </div>
           </div>
@@ -661,7 +661,8 @@
   </section>
 
   <script type="module" src="js/login.js"></script>
-  <script src="js/config.js"></script>
+  <script>if(!window.CONFIG){window.CONFIG={GEMINI_API_KEY:""};}</script>
+  <script src="js/config.js" onerror=""></script>
   <script src="js/chatbot.js"></script>
 </body>
 </html>

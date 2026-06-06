@@ -761,6 +761,52 @@ function initChatPreview() {
   const typingEl = document.getElementById('chatTyping');
   if (!input || !messages) return;
 
+  const PREVIEW_CHAT_KEY = 'nexora-preview-chat';
+  const CHAT_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  function savePreviewChat() {
+    try {
+      const msgs = [];
+      messages.querySelectorAll('.chat-message').forEach(msg => {
+        msgs.push({
+          role: msg.classList.contains('user') ? 'user' : 'bot',
+          text: msg.textContent.trim()
+        });
+      });
+      localStorage.setItem(PREVIEW_CHAT_KEY, JSON.stringify({
+        messages: msgs,
+        timestamp: Date.now()
+      }));
+    } catch (e) { /* ignore */ }
+  }
+
+  function restorePreviewChat() {
+    try {
+      const stored = localStorage.getItem(PREVIEW_CHAT_KEY);
+      if (!stored) return;
+      const data = JSON.parse(stored);
+      if (Date.now() - data.timestamp > CHAT_EXPIRY_MS) {
+        localStorage.removeItem(PREVIEW_CHAT_KEY);
+        return;
+      }
+      if (!data.messages || data.messages.length === 0) return;
+
+      // Clear existing demo messages
+      messages.querySelectorAll('.chat-message').forEach(msg => msg.remove());
+
+      // Restore
+      data.messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = `chat-message ${msg.role === 'user' ? 'user' : 'bot'}`;
+        div.textContent = msg.text;
+        messages.insertBefore(div, typingEl);
+      });
+    } catch (e) { /* ignore */ }
+  }
+
+  // Restore on init
+  restorePreviewChat();
+
   function scrollToBottom() {
     messages.scrollTo({ top: messages.scrollHeight, behavior: 'smooth' });
   }
@@ -806,6 +852,9 @@ function initChatPreview() {
         }
       });
       messages.insertBefore(botMsg, typingEl);
+
+      // Persist chat
+      savePreviewChat();
     } catch (error) {
       console.error("Chat Preview Error:", error);
       if (typingEl) typingEl.classList.remove('active');
@@ -813,6 +862,7 @@ function initChatPreview() {
       botMsg.className = 'chat-message bot';
       botMsg.textContent = "عذراً، حدث خطأ في النظام. تفاصيل الخطأ تظهر في الـ Console.";
       messages.insertBefore(botMsg, typingEl);
+      savePreviewChat();
     }
     scrollToBottom();
   }

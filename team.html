@@ -450,7 +450,7 @@
           <ul>
             <li><a href="instructions.html">تعليمات استخدام المنصة</a></li>
             <li><a href="privacy.html">سياسة الخصوصية</a></li>
-            <li><a href="#">الشروط والأحكام</a></li>
+            <li><a href="terms.html">الشروط والأحكام</a></li>
           </ul>
         </div>
       </div>
@@ -538,7 +538,8 @@
       animate();
     }
   </script>
-  <script src="js/config.js"></script>
+  <script>if(!window.CONFIG){window.CONFIG={GEMINI_API_KEY:""};}</script>
+  <script src="js/config.js" onerror=""></script>
   <script src="js/chatbot.js"></script>
 </body>
 </html>
